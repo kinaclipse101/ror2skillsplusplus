@@ -19,7 +19,9 @@ namespace SkillsPlusPlus.Source
         public static ConfigEntry<bool> disableInput;
         public static ConfigEntry<bool> multScalingLinear;
         public static ConfigEntry<bool> debugLogging;
-        public static ConfigEntry<List<string>> disabledSurvivors;
+        public static ConfigEntry<bool> deeperDebugLogging;
+        public static ConfigEntry<string> disabledSurvivors;
+        public static string[] disabledSurvivorList = [];
         
         public static void InitConfig()
         {
@@ -63,9 +65,12 @@ namespace SkillsPlusPlus.Source
             {
                 disabledSurvivors = SkillsPlugin.Instance.Config.Bind("Skills++",
                     "Disabled Survivors",
-                    new List<string>(),
+                    "",
                     "Survivors which shouldn't recieve skill upgrades. Can be modified in-game using the \"spp_disable_survivor\" and \"spp_enable_survivor\" commands respectively.");
-                ModSettingsManager.AddOption(new CheckBoxOption(debugLogging));
+                disabledSurvivors.SettingChanged += (sender, args) => { disabledSurvivorList = disabledSurvivors.Value.Split(","); };
+                disabledSurvivorList = disabledSurvivors.Value.Split(",");
+                
+                ModSettingsManager.AddOption(new StringInputFieldOption(disabledSurvivors));
             }
             
             {
@@ -74,6 +79,14 @@ namespace SkillsPlusPlus.Source
                     false,
                     "Enables debug logging.");
                 ModSettingsManager.AddOption(new CheckBoxOption(debugLogging));
+            }
+            
+            {
+                deeperDebugLogging = SkillsPlugin.Instance.Config.Bind("Skills++",
+                    "More Debug Logging",
+                    false,
+                    "Enables further debug logging on more frequently called logs.");
+                ModSettingsManager.AddOption(new CheckBoxOption(deeperDebugLogging));
             }
         }
         
@@ -95,13 +108,13 @@ namespace SkillsPlusPlus.Source
             }
 
             SurvivorDef survivorDef = survivorDefs[0];
-            if (disabledSurvivors.Value.Contains(survivorDef.cachedName))
+            if (disabledSurvivorList.Contains(survivorDef.cachedName))
             {
                 Debug.Log($"{survivorDef.cachedName} has already been disabled.");
                 return;
             }
             
-            disabledSurvivors.Value.Add(survivorDef.cachedName);
+            disabledSurvivors.Value += $"{survivorDef.cachedName},";
             Debug.Log($"Disabled survivors: '{disabledSurvivors.Value}'"); 
         }
 
@@ -122,7 +135,13 @@ namespace SkillsPlusPlus.Source
                 return;
             }
             
-            disabledSurvivors.Value.Remove(survivorDefs[0].cachedName);
+            List<string> newSurvs = disabledSurvivorList.ToList();
+            disabledSurvivors.Value = "";
+            newSurvs.Remove(survivorDefs[0].cachedName);
+            foreach (string survivor in newSurvs)
+            {
+                disabledSurvivors.Value += $"{survivor},";
+            }
             Debug.Log($"Disabled survivors: '{disabledSurvivors.Value}'");
         }
     }

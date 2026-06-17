@@ -55,7 +55,7 @@ namespace SkillsPlusPlus.Modifiers
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
             MineArmingWeak.duration = MultScaling(3, -0.10f, level);
-            Logger.Debug($"MineArmingWeak.duration: {MineArmingWeak.duration}");
+            Log.Debug($"MineArmingWeak.duration: {MineArmingWeak.duration}");
         }
 
         public override void OnSkillEnter(BaseState skillState, int level)
@@ -77,7 +77,7 @@ namespace SkillsPlusPlus.Modifiers
 
         public void OnMinesArmedEnter(BaseMineArmingState skillState, int level)
         {
-            Logger.Debug($"triggerRadius: {skillState.triggerRadius}, blastRadiusScale: {skillState.blastRadiusScale}, force: {skillState.forceScale}, damageScale: {skillState.damageScale}");
+            Log.Debug($"triggerRadius: {skillState.triggerRadius}, blastRadiusScale: {skillState.blastRadiusScale}, force: {skillState.forceScale}, damageScale: {skillState.damageScale}");
 
             if (skillState is MineArmingFull)
             {
@@ -92,7 +92,7 @@ namespace SkillsPlusPlus.Modifiers
                     Vector3 scale = Vector3.one * 2 * skillState.triggerRadius;
                     objectScaleCurve.gameObject.transform.localScale = scale;
                     objectScaleCurve.baseScale = scale;
-                    Logger.Debug($"objectScaleCurve.baseScale: {objectScaleCurve.baseScale}");
+                    Log.Debug($"objectScaleCurve.baseScale: {objectScaleCurve.baseScale}");
                 }
             }
             else if (skillState is MineArmingWeak)
@@ -102,7 +102,7 @@ namespace SkillsPlusPlus.Modifiers
                 skillState.blastRadiusScale = MultScaling(0.2f, 0.20f, level);
                 skillState.triggerRadius = MultScaling(4, 0.20f, level);
             }
-            Logger.Debug($"triggerRadius: {skillState.triggerRadius}, blastRadiusScale: {skillState.blastRadiusScale}, force: {skillState.forceScale}, damageScale: {skillState.damageScale}");
+            Log.Debug($"triggerRadius: {skillState.triggerRadius}, blastRadiusScale: {skillState.blastRadiusScale}, force: {skillState.forceScale}, damageScale: {skillState.damageScale}");
         }
     }
 
@@ -137,14 +137,14 @@ namespace SkillsPlusPlus.Modifiers
 
         private void OnFireSpiderMineEnter(FireSpiderMine fireSpiderMine, int level)
         {
-            Logger.Debug($"damageCoefficient: {fireSpiderMine.damageCoefficient}");
+            Log.Debug($"damageCoefficient: {fireSpiderMine.damageCoefficient}");
             fireSpiderMine.damageCoefficient = MultScaling(6, 0.20f, level);
         }
 
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-            Logger.Debug($"blastRadius: {EntityStates.Engi.SpiderMine.Detonate.blastRadius}");
+            Log.Debug($"blastRadius: {EntityStates.Engi.SpiderMine.Detonate.blastRadius}");
             skillDef.baseMaxStock = AdditiveScaling(4, 1, level);
             EntityStates.Engi.SpiderMine.Detonate.blastRadius = MultScaling(14, 0.25f, level);
         }
@@ -185,8 +185,8 @@ namespace SkillsPlusPlus.Modifiers
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
             skillDef.baseMaxStock = AdditiveScaling(4, 1, level);
-            Logger.Debug($"paintInterval: {Paint.stackInterval}");
-            Logger.Debug($"baseDurationPerMissile: {Fire.baseDurationPerMissile}, damageCoefficient: {Fire.damageCoefficient}");
+            Log.Debug($"paintInterval: {Paint.stackInterval}");
+            Log.Debug($"baseDurationPerMissile: {Fire.baseDurationPerMissile}, damageCoefficient: {Fire.damageCoefficient}");
             Fire.damageCoefficient = MultScaling(5, 0.20f, level);
             Paint.maxDistance = MultScaling(150, 0.30f, level);
         }
@@ -212,7 +212,7 @@ namespace SkillsPlusPlus.Modifiers
         private void OnFireGaussEnter(FireGauss skillState, int level)
         {
             // skillState.bullea
-            Logger.Debug($"damageCoefficient: {FireGauss.damageCoefficient}, bulletCount: {FireGauss.bulletCount}");
+            Log.Debug($"damageCoefficient: {FireGauss.damageCoefficient}, bulletCount: {FireGauss.bulletCount}");
             if (skillState.outer.commonComponents.characterBody.master.TryGetComponent(out BaseAI baseAI))
             {
                 AISkillDriver skillDriver = baseAI.skillDrivers.FirstOrDefault(it => { return it.customName == "FireAtEnemy"; });
@@ -253,7 +253,7 @@ namespace SkillsPlusPlus.Modifiers
 
         private void OnFireBeamEnter(FireBeam fireBeam, int level)
         {
-            Logger.Debug("damageCoefficient: {fireBeam.damageCoefficient}, fireFrequency: {fireBeam.fireFrequency}, procCoefficient: {fireBeam.procCoefficient}");
+            Log.Debug("damageCoefficient: {fireBeam.damageCoefficient}, fireFrequency: {fireBeam.fireFrequency}, procCoefficient: {fireBeam.procCoefficient}");
             fireBeam.damageCoefficient = MultScaling(2, 0.15f, level);
             fireBeam.procCoefficient = MultScaling(3, 0.25f, level);
             fireBeam.fireFrequency = MultScaling(5, 0.10f, level);

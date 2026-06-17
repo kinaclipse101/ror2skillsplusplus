@@ -16,10 +16,10 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-            Logger.Debug($"FireFirebolt before - baseMaxStock: {skillDef.baseMaxStock}, baseRechargeInterval: {skillDef.baseRechargeInterval}");
+            Log.Debug($"FireFirebolt before - baseMaxStock: {skillDef.baseMaxStock}, baseRechargeInterval: {skillDef.baseRechargeInterval}");
             skillDef.baseMaxStock = AdditiveScaling(4, 2, level);
             skillDef.baseRechargeInterval = MultScaling(1.3f, -0.1f, level);
-            Logger.Debug($"FireFirebolt after - baseMaxStock: {skillDef.baseMaxStock}, baseRechargeInterval: {skillDef.baseRechargeInterval}");
+            Log.Debug($"FireFirebolt after - baseMaxStock: {skillDef.baseMaxStock}, baseRechargeInterval: {skillDef.baseRechargeInterval}");
         }
 
     }
@@ -30,10 +30,10 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-            Logger.Debug("FireFirebolt before - baseMaxStock: {skillDef.baseMaxStock}, baseRechargeInterval: {skillDef.baseRechargeInterval}");
+            Log.Debug("FireFirebolt before - baseMaxStock: {skillDef.baseMaxStock}, baseRechargeInterval: {skillDef.baseRechargeInterval}");
             skillDef.baseMaxStock = AdditiveScaling(4, 2, level);
             skillDef.baseRechargeInterval = MultScaling(1.3f, -0.1f, level);
-            Logger.Debug("FireFirebolt after - baseMaxStock: {skillDef.baseMaxStock}, baseRechargeInterval: {skillDef.baseRechargeInterval}");
+            Log.Debug("FireFirebolt after - baseMaxStock: {skillDef.baseMaxStock}, baseRechargeInterval: {skillDef.baseRechargeInterval}");
         }
 
     }
@@ -98,15 +98,15 @@ namespace SkillsPlusPlus.Modifiers
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
 
             if (skillDef != characterBodyLevelup.skillLocator.utility.skillDef) return;
-            Logger.Debug("upgraded util");
+            Log.Debug("upgraded util");
 
-            Logger.Debug($"baseDuration: {PrepWall.baseDuration}, damageCoefficient: {PrepWall.damageCoefficient}");
+            Log.Debug($"baseDuration: {PrepWall.baseDuration}, damageCoefficient: {PrepWall.damageCoefficient}");
             PrepWall.damageCoefficient = AdditiveScaling(1, 0.3f, level);
 
             if (PrepWall.projectilePrefab.TryGetComponent(out ProjectileMageFirewallWalkerController projectileMageFirewallWalkerController))
             {
                 projectileMageFirewallWalkerController.totalProjectiles = AdditiveScaling(6, 1, level);
-                Logger.Debug($"projectileMageFirewallWalkerController.totalProjectiles: {projectileMageFirewallWalkerController.totalProjectiles}");
+                Log.Debug($"projectileMageFirewallWalkerController.totalProjectiles: {projectileMageFirewallWalkerController.totalProjectiles}");
                 // this just like ,.., doesnt update the ones not newly added ?? for no reason ???? ive spent like 4 days rethinking this over just gonna remove it ,.,
                 /*if (projectileMageFirewallWalkerController.firePillarPrefab.TryGetComponent(out ProjectileImpactExplosion projectileImpactExplosion))
                 {
@@ -133,8 +133,8 @@ namespace SkillsPlusPlus.Modifiers
             //PrepWall.projectilePrefab = PrepWall.projectilePrefab.gameObject.InstantiateClone(PrepWall.projectilePrefab.gameObject.name);
             PrepWall.areaIndicatorPrefab = PrepWall.areaIndicatorPrefab.gameObject.InstantiateClone(PrepWall.areaIndicatorPrefab.gameObject.name);
 
-            Logger.Debug($"baseDuration: {PrepWall.baseDuration}, damageCoefficient: {PrepWall.damageCoefficient}");
-            Logger.Debug(PrepWall.projectilePrefab.name);
+            Log.Debug($"baseDuration: {PrepWall.baseDuration}, damageCoefficient: {PrepWall.damageCoefficient}");
+            Log.Debug(PrepWall.projectilePrefab.name);
         }
     }
 
@@ -147,24 +147,24 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillEnter(Flamethrower skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
-            Logger.Debug(skillState.maxDistance);
+            Log.Debug(skillState.maxDistance);
             skillState.maxDistance = MultScaling(skillState.maxDistance, 0.2f, level);
 
-            Logger.Debug(skillState.flamethrowerEffectPrefab.transform.localScale);
+            Log.Debug(skillState.flamethrowerEffectPrefab.transform.localScale);
             skillState.totalDamageCoefficient = totalDamageCoeff;
             skillState.flamethrowerEffectPrefab.transform.localScale = new Vector3(baseRadius, baseRadius, AdditiveScaling(1, 1, level));
             
-            Logger.Debug(skillState.maxDistance);
+            Log.Debug(skillState.maxDistance);
         }
 
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-            Logger.Debug($"Flamethrower stats - totalDamageCoefficient: {totalDamageCoeff}, radius: {baseRadius}");
+            Log.Debug($"Flamethrower stats - totalDamageCoefficient: {totalDamageCoeff}, radius: {baseRadius}");
             baseRadius = MultScaling(2f, 0.25f, level);
             //Flamethrower.baseFlamethrowerDuration = AdditiveScaling(baseFlamethrowerDuration, 2, level);
             totalDamageCoeff = MultScaling(20, 0.20f, level);
-            Logger.Debug($"Flamethrower stats - totalDamageCoefficient: {totalDamageCoeff}, radius: {baseRadius}");
+            Log.Debug($"Flamethrower stats - totalDamageCoefficient: {totalDamageCoeff}, radius: {baseRadius}");
         }
 
     }
@@ -175,10 +175,10 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-            Logger.Debug($"FlyUpState stats - duration: {FlyUpState.duration}, blastAttackDamageCoefficient: {FlyUpState.blastAttackDamageCoefficient}, blastAttackRadius: {FlyUpState.blastAttackRadius}, blastAttackProcCoefficient: {FlyUpState.blastAttackProcCoefficient}");
+            Log.Debug($"FlyUpState stats - duration: {FlyUpState.duration}, blastAttackDamageCoefficient: {FlyUpState.blastAttackDamageCoefficient}, blastAttackRadius: {FlyUpState.blastAttackRadius}, blastAttackProcCoefficient: {FlyUpState.blastAttackProcCoefficient}");
             FlyUpState.blastAttackDamageCoefficient = MultScaling(8, 0.25f, level);
             FlyUpState.blastAttackRadius = MultScaling(8, 0.3f, level);
-            Logger.Debug($"FlyUpState stats - duration: {FlyUpState.duration}, blastAttackDamageCoefficient: {FlyUpState.blastAttackDamageCoefficient}, blastAttackRadius: {FlyUpState.blastAttackRadius}, blastAttackProcCoefficient: {FlyUpState.blastAttackProcCoefficient}");
+            Log.Debug($"FlyUpState stats - duration: {FlyUpState.duration}, blastAttackDamageCoefficient: {FlyUpState.blastAttackDamageCoefficient}, blastAttackRadius: {FlyUpState.blastAttackRadius}, blastAttackProcCoefficient: {FlyUpState.blastAttackProcCoefficient}");
         }
     }
 }

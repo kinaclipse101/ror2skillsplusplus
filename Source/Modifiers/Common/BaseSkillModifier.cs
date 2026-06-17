@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using BepInEx.Configuration;
 using EntityStates;
 using RoR2;
 using RoR2.Skills;
+using SkillsPlusPlus.Source;
 using UnityEngine;
 
 namespace SkillsPlusPlus.Modifiers
@@ -21,14 +24,8 @@ namespace SkillsPlusPlus.Modifiers
         /// <summary>
         /// The SkillUpgrade associated to this Modifier. Call FindSkillUpgrade to assign.
         /// </summary>
-        public SkillUpgrade registeredSkill;
+        public SkillUpgradeHelper.SkillUpgrades registeredSkill;
         
-        /// <summary>
-        /// The current character body skill modifier is being applied to.
-        /// </summary>
-        internal CharacterBody characterBody { get; set; }
-
-
         static bool bMultScalingLinear;
 
         public BaseSkillModifier()
@@ -50,7 +47,7 @@ namespace SkillsPlusPlus.Modifiers
         /// <param name="level">The current level of the associated skill</param>
         public virtual void OnSkillEnter(BaseState skillState, int level)
         {
-            Logger.Debug($"{GetType().Name}.OnSkillEnter({skillState}, {level})");
+            Log.Debug($"{GetType().Name}.OnSkillEnter({skillState}, {level})", true);
         }
 
         /// <summary>
@@ -60,7 +57,7 @@ namespace SkillsPlusPlus.Modifiers
         /// <param name="level">The current level of the associated skill</param>
         public virtual void OnSkillExit(BaseState skillState, int level)
         {
-            Logger.Debug($"{GetType().Name}.OnSkillExit({skillState}, {level})");
+            Log.Debug($"{GetType().Name}.OnSkillExit({skillState}, {level})", true);
         }
 
         /// <summary>
@@ -71,10 +68,10 @@ namespace SkillsPlusPlus.Modifiers
         /// <param name="skillDef">The associated skill definition</param>
         public virtual void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
-            Logger.Debug($"{GetType().Name}.OnSkillLeveledUp({level}, {characterBodyLevelup}, {skillDef})");
+            Log.Debug($"{GetType().Name}.OnSkillLeveledUp({level}, {characterBodyLevelup}, {skillDef})");
             FindSkillUpgrade(characterBodyLevelup, "blank", true);
 
-            bMultScalingLinear = (bool)registeredSkill?.skillPointsController?.multScalingLinear;
+            //bMultScalingLinear = (bool)registeredSkill?.skillPointsController?.multScalingLinear;
         }
 
         /// <summary>
@@ -93,7 +90,7 @@ namespace SkillsPlusPlus.Modifiers
         internal void ReportBroken(params String[] fields)
         {
             var fieldInfo = String.Join(",", fields);
-            Logger.Warning($"Skill {GetType().FullName} is broken. Cannot access the following items: {fieldInfo}");
+            Log.Warning($"Skill {GetType().FullName} is broken. Cannot access the following items: {fieldInfo}");
         }
 
         /// <summary>
@@ -156,7 +153,7 @@ namespace SkillsPlusPlus.Modifiers
         {
             if (multiplier <= -1)
             {
-                Logger.Error("Multipliers less than -1 are not allowed as it causes sporadic behaviour with the scaling.");
+                Log.Error("Multipliers less than -1 are not allowed as it causes sporadic behaviour with the scaling.");
                 return baseValue;
             }
 
@@ -184,50 +181,14 @@ namespace SkillsPlusPlus.Modifiers
         /// <returns></returns>
         protected void FindSkillUpgrade(CharacterBody characterBody, String baseSkillName, bool bConfirmSkill = false)
         {
-
-            if (bConfirmSkill && registeredSkill)
+            if (!SkillUpgradeHelper.instance.masterSkills.TryGetValue(characterBody.master, out List<SkillUpgradeHelper.SkillUpgrades> list)) return;
+            
+            foreach (SkillUpgradeHelper.SkillUpgrades skillUpgrades in list)
             {
-                SkillUpgrade[] upgrades = characterBody.GetComponents<SkillUpgrade>();
-
-                //If registered skill isn't on this character body, null it.
-                if (Array.IndexOf(upgrades, registeredSkill) == -1)
-                {
-                    registeredSkill = null;
-                }
-            }
-
-            if (registeredSkill == null)
-            {
-                SkillUpgrade[] upgrades = characterBody.GetComponents<SkillUpgrade>();
-
-                for (int i = 0; i < upgrades.Length; i++)
-                {
-                    if (upgrades[i] != null)
-                    {
-                        foreach (GenericSkill skill in characterBody?.skillLocator?.allSkills)
-                        {
-                            int pos = Array.IndexOf(skillNames, ((ScriptableObject)skill.skillDef)?.name);
-                            if (pos > -1)
-                            {
-                                if (upgrades[i].targetGenericSkill.skillFamily == skill.skillFamily)
-                                {
-                                    registeredSkill = upgrades[i];
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    if (registeredSkill)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            if (registeredSkill == null)
-            {
-                Logger.Warning($"Could not find {baseSkillName}'s Skill Upgrade");
+                if (!skillNames.Contains(((ScriptableObject)skillUpgrades.genericSkill.skillDef)?.name)) continue;
+                    
+                registeredSkill = skillUpgrades;
+                break;
             }
         }
 

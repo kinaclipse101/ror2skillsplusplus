@@ -17,12 +17,12 @@ namespace SkillsPlusPlus.Modifiers
         {
             if (skillState is SkillState)
             {
-                Logger.Debug($"OnSkillEnter({skillState}, {level})");
+                Log.Debug($"OnSkillEnter({skillState}, {level})", true);
                 OnSkillEnter(skillState as SkillState, level);
             }
             else
             {
-                Logger.Warning($"Unable to cast {skillState} to {typeof(SkillState).FullName}");
+                Log.Warning($"Unable to cast {skillState} to {typeof(SkillState).FullName}");
             }
         }
 
@@ -31,12 +31,12 @@ namespace SkillsPlusPlus.Modifiers
         {
             if (skillState is SkillState)
             {
-                Logger.Debug($"OnSkillExit({skillState}, {level})");
+                Log.Debug($"OnSkillExit({skillState}, {level})", true);
                 this.OnSkillExit(skillState as SkillState, level);
             }
             else
             {
-                Logger.Warning($"Unable to cast {skillState} to {typeof(SkillState).FullName}");
+                Log.Warning($"Unable to cast {skillState} to {typeof(SkillState).FullName}");
             }
         }
 
@@ -44,7 +44,7 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             //also very log heavy in debug
-            //Logger.Debug("OnSkillLeveledUp({0}, {1}, {2})", level, characterBody, skillDef);
+            Log.Debug($"OnSkillLeveledUp({level}, {characterBodyLevelup}, {skillDef})", true);
             FindSkillUpgrade(characterBodyLevelup, "blank", true);
             // no-op
         }

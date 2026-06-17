@@ -4,6 +4,7 @@ using EntityStates.Treebot;
 using EntityStates.Treebot.Weapon;
 using EntityStates.Treebot.TreebotFlower;
 using RoR2.Projectile;
+using SkillsPlusPlus.Source;
 using UnityEngine;
 
 namespace SkillsPlusPlus.Modifiers
@@ -158,7 +159,7 @@ namespace SkillsPlusPlus.Modifiers
     {
         private static float baseBlastRadius = 0f;
         private static float baseDamageCoefficient = 0f;
-        private static SkillUpgrade seedSkill;
+        private static SkillUpgradeHelper.SkillUpgrades seedSkill;
         public override void OnSkillEnter(TreebotFireFruitSeed skillState, int level)
         {
             if (skillState is TreebotFireFruitSeed)
@@ -190,7 +191,7 @@ namespace SkillsPlusPlus.Modifiers
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
 
-            if (!seedSkill)
+            if (seedSkill == null)
             {
                 seedSkill = registeredSkill;
             }

@@ -9,6 +9,7 @@ using RoR2.Projectile;
 using RoR2.Skills;
 using System;
 using System.Collections.Generic;
+using SkillsPlusPlus.Source;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
@@ -34,7 +35,7 @@ namespace SkillsPlusPlus.Modifiers
                 }
                 else
                 {
-                    SkillsPlusPlus.Logger.Error("Failed to find the Railgunner ProjectilePrefab somehow");
+                    SkillsPlusPlus.Log.Error("Failed to find the Railgunner ProjectilePrefab somehow");
                 }
             }
 
@@ -62,7 +63,7 @@ namespace SkillsPlusPlus.Modifiers
     {
         private static int EmpoweredRoundsLeft = 0;
         private static int MaxEmpoweredRounds = 1;
-        private static SkillUpgrade M99skill;
+        private static SkillUpgradeHelper.SkillUpgrades M99skill;
 
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
@@ -71,7 +72,7 @@ namespace SkillsPlusPlus.Modifiers
             MaxEmpoweredRounds = level + 1;
             skillDef.baseMaxStock = 1 + level / 2;
 
-            if (!M99skill)
+            if (M99skill == null)
             {
                 M99skill = registeredSkill;
             }
@@ -100,9 +101,9 @@ namespace SkillsPlusPlus.Modifiers
 
         public static void OnEnterBoostConfirm(On.EntityStates.Railgunner.Reload.BoostConfirm.orig_OnEnter orig, BoostConfirm self)
         {
-            if (M99skill)
+            if (M99skill != null)
             {
-                EmpoweredRoundsLeft = Math.Min(M99skill.targetGenericSkill.maxStock, MaxEmpoweredRounds);
+                EmpoweredRoundsLeft = Math.Min(M99skill.genericSkill.maxStock, MaxEmpoweredRounds);
             }
 
             orig(self);
@@ -114,7 +115,7 @@ namespace SkillsPlusPlus.Modifiers
     {
         private static BuffDef KillingSpreeBuff;
         private static BuffDef StrategicRetreatBuff;
-        private static SkillUpgrade HH44Skill;
+        private static SkillUpgradeHelper.SkillUpgrades HH44Skill;
         private static bool bScopeActive;
         private static float KillingSpreeTimer = 0;
         private static float SpreeTimerGrace = 2f;
@@ -173,7 +174,7 @@ namespace SkillsPlusPlus.Modifiers
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
 
-            if (!HH44Skill)
+            if (HH44Skill != null)
             {
                 HH44Skill = registeredSkill;
             }
@@ -212,7 +213,7 @@ namespace SkillsPlusPlus.Modifiers
 
         public void GlobalEventManager_OnCharacterDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, RoR2.GlobalEventManager self, RoR2.DamageReport damageReport)
         {
-            if (bScopeActive && damageReport.attackerBody == HH44Skill.targetGenericSkill.characterBody && HH44Skill.skillLevel > 0)
+            if (bScopeActive && damageReport.attackerBody == HH44Skill.genericSkill.characterBody && HH44Skill.skillLevel > 0)
             {
                 damageReport.attackerBody.AddBuff(KillingSpreeBuff);
                 KillingSpreeTimer = SpreeTimerGrace;
@@ -223,7 +224,7 @@ namespace SkillsPlusPlus.Modifiers
 
         public void CharacterBody_Update(On.RoR2.CharacterBody.orig_Update orig, RoR2.CharacterBody self)
         {
-            if (HH44Skill && self == HH44Skill.targetGenericSkill.characterBody && self.HasBuff(KillingSpreeBuff))
+            if (HH44Skill != null && self == HH44Skill.genericSkill.characterBody && self.HasBuff(KillingSpreeBuff))
             {
                 KillingSpreeTimer -= Time.deltaTime;
 
@@ -278,7 +279,7 @@ namespace SkillsPlusPlus.Modifiers
         private static BuffDef FeatherFallBuff;
         private static int ConcussiveProjectileCatalogIndex = -1337;
         private static float baseThrowForce = 0;
-        private static SkillUpgrade ConcussiveMineSkill;
+        private static SkillUpgradeHelper.SkillUpgrades ConcussiveMineSkill;
 
         public override void OnSkillEnter(FireMineConcussive skillState, int level)
         {
@@ -306,10 +307,12 @@ namespace SkillsPlusPlus.Modifiers
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
 
-            if (!ConcussiveMineSkill)
+            Log.Debug($"RailgunnerConcussiveMineSkillModifier OnSkillLeveledUp {ConcussiveMineSkill == null}");
+            if (ConcussiveMineSkill == null)
             {
                 ConcussiveMineSkill = registeredSkill;
             }
+            Log.Debug($"RailgunnerConcussiveMineSkillModifier OnSkillLeveledUp {ConcussiveMineSkill == null}");
         }
 
         public override void SetupSkill()
@@ -345,7 +348,7 @@ namespace SkillsPlusPlus.Modifiers
                 if (ConcussiveMineSkill.skillLevel != 0)
                 {
                     self.body.AddTimedBuff(FeatherFallBuff, 1.0f + (0.5f * ConcussiveMineSkill.skillLevel));
-                    if (self.body != ConcussiveMineSkill.targetGenericSkill.characterBody)
+                    if (self.body != ConcussiveMineSkill.genericSkill.characterBody)
                     {
                         self?.body?.characterMotor?.AddDisplacement(new Vector3(0f, 5f, 0f));
                     }
@@ -375,7 +378,7 @@ namespace SkillsPlusPlus.Modifiers
         private static BuffDef TimePressureDebuff;
         private static int PolarProjectileCatalogIndex = -1337;
         private static float baseThrowForce = 0;
-        private static SkillUpgrade PolarMineSkill;
+        private static SkillUpgradeHelper.SkillUpgrades PolarMineSkill;
         private static float baseRadius = 0;
         private static List<BuffWard> Wards = new List<BuffWard>();
 
@@ -429,7 +432,7 @@ namespace SkillsPlusPlus.Modifiers
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
 
-            if (!PolarMineSkill)
+            if (PolarMineSkill == null)
             {
                 PolarMineSkill = registeredSkill;
             }
@@ -488,7 +491,7 @@ namespace SkillsPlusPlus.Modifiers
     {
         private static float originalProcRate = 0f;
         private static float originalCritMult = 0f;
-        private static SkillUpgrade superchargeSkill;
+        private static SkillUpgradeHelper.SkillUpgrades superchargeSkill;
 
         private static float originalRechargeRate;
 
@@ -512,13 +515,13 @@ namespace SkillsPlusPlus.Modifiers
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
 
-            if (!superchargeSkill)
+            if (superchargeSkill == null)
             {
                 superchargeSkill = registeredSkill;
             }
 
             originalRechargeRate = 1 - (5f / (level + 5f));
-            Logger.Debug(originalRechargeRate);
+            Log.Debug(originalRechargeRate);
         }
 
         public override void SetupSkill()
@@ -530,7 +533,7 @@ namespace SkillsPlusPlus.Modifiers
 
         private void RecalculateStats(CharacterBody sender, StatHookEventArgs args)
         {
-            if (!sender || !superchargeSkill)
+            if (!sender || superchargeSkill == null)
             {
                 return;
             }
@@ -549,7 +552,7 @@ namespace SkillsPlusPlus.Modifiers
         private static BuffDef FrostfireBuff;
         private static DotController.DotDef FrostfireDot;
         private static DotController.DotIndex FrostfireIndex;
-        private static SkillUpgrade CryochargeSkill;
+        private static SkillUpgradeHelper.SkillUpgrades CryochargeSkill;
         private static bool bCryoActive = false;
         private static float originalRechargeRate = 0;
 
@@ -595,12 +598,12 @@ namespace SkillsPlusPlus.Modifiers
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
 
-            if (!CryochargeSkill)
+            if (CryochargeSkill == null)
             {
                 CryochargeSkill = registeredSkill;
             }
             originalRechargeRate = 1 - (10f / (level + 10f));
-            Logger.Debug(originalRechargeRate);
+            Log.Debug(originalRechargeRate);
         }
 
         public void RegisterFrostfireBuff()
@@ -631,7 +634,7 @@ namespace SkillsPlusPlus.Modifiers
 
         public static void HealthComponent_TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo di)
         {
-            if (bCryoActive && di.inflictor && di.inflictor.TryGetComponent(out CharacterBody body) && body == CryochargeSkill.targetGenericSkill.characterBody)
+            if (bCryoActive && di.inflictor && di.inflictor.TryGetComponent(out CharacterBody body) && body == CryochargeSkill.genericSkill.characterBody)
             {
                 if (CryochargeSkill.skillLevel > 0)
                 {

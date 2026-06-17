@@ -7,6 +7,7 @@ using EntityStates.Loader;
 
 using UnityEngine;
 using RoR2.UI;
+using SkillsPlusPlus.Source;
 
 namespace SkillsPlusPlus.Modifiers
 {
@@ -31,7 +32,7 @@ namespace SkillsPlusPlus.Modifiers
         private static float baseBlastRadius = 0f;
         private static float maxVerticalCap = 0f;
         private static Vector3 initialPosition;
-        private static SkillUpgrade slamSkill;
+        private static SkillUpgradeHelper.SkillUpgrades slamSkill;
         public override void OnSkillEnter(BaseState skillState, int level)
         {
 
@@ -59,7 +60,7 @@ namespace SkillsPlusPlus.Modifiers
             GroundSlam.verticalAcceleration = AdditiveScaling(baseVerticalAcceleration, baseVerticalAcceleration * 0.25f, level);
             maxVerticalCap = AdditiveScaling(0f, 10f, level);
 
-            if (!slamSkill)
+            if (slamSkill == null)
             {
                 slamSkill = registeredSkill;
             }
@@ -72,7 +73,7 @@ namespace SkillsPlusPlus.Modifiers
                 float distanceTravelled = Vector3.Distance(self.outer.commonComponents.characterBody.transform.position, initialPosition);
                 float distanceRatio = Mathf.Clamp(distanceTravelled / maxVerticalCap, 0f, 1f);
 
-                GroundSlam.blastRadius = baseBlastRadius * (slamSkill ? (1 + Mathf.Lerp(0.1f, 1f, distanceRatio) * slamSkill.skillLevel) : 1);
+                GroundSlam.blastRadius = baseBlastRadius * (slamSkill != null ? (1 + Mathf.Lerp(0.1f, 1f, distanceRatio) * slamSkill.skillLevel) : 1);
             }
             orig(self);
         }
@@ -205,7 +206,7 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-            Logger.Debug(SwingZapFist.selfKnockback);
+            Log.Debug(SwingZapFist.selfKnockback);
             SwingZapFist.selfKnockback = MultScaling(7000, 0.015f, level); // +10% knockback
             if (SwingZapFist.overchargeImpactEffectPrefab.TryGetComponent(out ProjectileProximityBeamController proximityBeamController))
             {
@@ -233,7 +234,7 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-            Logger.Debug($"baseDuration: {ThrowPylon.baseDuration}, damageCoefficient: {ThrowPylon.damageCoefficient}");
+            Log.Debug($"baseDuration: {ThrowPylon.baseDuration}, damageCoefficient: {ThrowPylon.damageCoefficient}");
             ThrowPylon.damageCoefficient = MultScaling(1.0f, 0.2f, level);
             if (ThrowPylon.projectilePrefab.TryGetComponent(out ProjectileProximityBeamController proximityBeamController))
             {

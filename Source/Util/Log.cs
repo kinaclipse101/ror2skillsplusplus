@@ -4,7 +4,7 @@ using SkillsPlusPlus.Source;
 
 namespace SkillsPlusPlus
 {
-    internal static class Logger
+    internal static class Log
     {
         private static ManualLogSource _logSource;
 
@@ -13,9 +13,9 @@ namespace SkillsPlusPlus
             _logSource = logSource;
         }
 
-        internal static void Debug(object data)
+        internal static void Debug(object data, bool deeper = false)
         {
-            if (SkillOptions.debugLogging.Value)
+            if (SkillOptions.debugLogging.Value && (!deeper || SkillOptions.deeperDebugLogging.Value))
             {
                 _logSource.LogDebug(data);
             }

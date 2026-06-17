@@ -38,10 +38,10 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillEnter(BaseState skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
-            Logger.Debug($"skillState: {skillState}");
+            Log.Debug($"skillState: {skillState}");
             if (skillState is FireSpear fireSpear)
             {
-                Logger.Debug($"baseDuration: {fireSpear.baseDuration}");
+                Log.Debug($"baseDuration: {fireSpear.baseDuration}");
                 fireSpear.baseDuration = MultScaling(fireSpear.baseDuration, -0.15f, level);
                 fireSpear.damageCoefficient = MultScaling(fireSpear.damageCoefficient, 0.10f, level);
             }
@@ -165,7 +165,7 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-            Logger.Debug($"baseFireFrequency: {FireBuzzsaw.baseFireFrequency}");
+            Log.Debug($"baseFireFrequency: {FireBuzzsaw.baseFireFrequency}");
             FireBuzzsaw.damageCoefficientPerSecond = MultScaling(10, 0.20f, level);
             FireBuzzsaw.baseFireFrequency = MultScaling(10, 0.20f, level);
         }
@@ -178,7 +178,7 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillEnter(AimStunDrone aimStunDrone, int level)
         {
             base.OnSkillEnter(aimStunDrone, level);
-            Logger.Debug($"damageCoefficient: {aimStunDrone.damageCoefficient}, baseMinimumDuration: {aimStunDrone.baseMinimumDuration}, maxDistance: {aimStunDrone.maxDistance}");
+            Log.Debug($"damageCoefficient: {aimStunDrone.damageCoefficient}, baseMinimumDuration: {aimStunDrone.baseMinimumDuration}, maxDistance: {aimStunDrone.maxDistance}");
             aimStunDrone.maxDistance = MultScaling(aimStunDrone.maxDistance, 0.4f, level); // 2 * 20%
             if (aimStunDrone.projectilePrefab.TryGetComponent(out ProjectileImpactExplosion projectileImpactExplosion))
             {
@@ -204,7 +204,7 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillEnter(ToolbotDash toolbotDash, int level)
         {
             base.OnSkillEnter(toolbotDash, level);
-            Logger.Debug($"baseDuration: {toolbotDash.baseDuration}, speedMultiplier: {toolbotDash.speedMultiplier}, chargeDamageCoefficient: {ToolbotDash.chargeDamageCoefficient}, knockbackForce: {ToolbotDash.knockbackForce}, knockbackDamageCoefficient: {ToolbotDash.knockbackDamageCoefficient}, massThresholdForKnockback: {ToolbotDash.massThresholdForKnockback}");
+            Log.Debug($"baseDuration: {toolbotDash.baseDuration}, speedMultiplier: {toolbotDash.speedMultiplier}, chargeDamageCoefficient: {ToolbotDash.chargeDamageCoefficient}, knockbackForce: {ToolbotDash.knockbackForce}, knockbackDamageCoefficient: {ToolbotDash.knockbackDamageCoefficient}, massThresholdForKnockback: {ToolbotDash.massThresholdForKnockback}");
             // baseDuration: 2, speedMultiplier: 2.2, knockbackForce: 8000, knockbackDamageCoefficient: 10, massThresholdForKnockback: 250
             toolbotDash.baseDuration = MultScaling(toolbotDash.baseDuration, 0.10f, level);
             toolbotDash.speedMultiplier = MultScaling(2.2f, 0.10f, level);
@@ -227,7 +227,7 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillEnter(ToolbotStanceSwap toolbotStanceSwap, int level)
         {
             base.OnSkillEnter(toolbotStanceSwap, level);
-            Logger.Debug($"baseDuration: {toolbotStanceSwap.baseDuration}");
+            Log.Debug($"baseDuration: {toolbotStanceSwap.baseDuration}");
             // toolbotStanceSwap.SetFieldValue("baseDuration", MultScaling(0.4f, -0.25f, level));
         }
 
@@ -252,14 +252,14 @@ namespace SkillsPlusPlus.Modifiers
             base.OnSkillEnter(toolbotStanceSwap, level);
             if (armorBonus > 0)
             {
-                Logger.Debug("enter dualwield");
+                Log.Debug("enter dualwield");
                 toolbotStanceSwap.characterBody.SetBuffCount(dualWieldArmorBuff.buffIndex, 1);
             }
         }
         public override void OnSkillExit(ToolbotDualWield skillState, int level)
         {
             base.OnSkillExit(skillState, level);
-            Logger.Debug("exit dualwield");
+            Log.Debug("exit dualwield");
             skillState.characterBody.SetBuffCount(dualWieldArmorBuff.buffIndex, 0);
         }
 
@@ -276,7 +276,7 @@ namespace SkillsPlusPlus.Modifiers
             armorBonus = AdditiveScaling(0, 25, level);
             damageBonus = AdditiveScaling(0, 0.15f, level);
             moveSpeedBonus = AdditiveScaling(0, 1f, level);
-            Logger.Debug("leveled up dualwield");
+            Log.Debug("leveled up dualwield");
         }
 
         public override void SetupSkill()

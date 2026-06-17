@@ -33,7 +33,7 @@ namespace SkillsPlusPlus.Modifiers
             }
             else
             {
-                Logger.Warning($"Could not locate the HuntressTracker component on {characterBodyLevelup}");
+                Log.Warning($"Could not locate the HuntressTracker component on {characterBodyLevelup}");
             }
         }
     }
@@ -54,7 +54,7 @@ namespace SkillsPlusPlus.Modifiers
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
             // when the flurry crits it uses the following number of arrows
-            Logger.Debug($"critMaxArrowCount: {FireFlurrySeekingArrow.critMaxArrowCount}, critBaseArrowReloadDuration: {FireFlurrySeekingArrow.critBaseArrowReloadDuration}");
+            Log.Debug($"critMaxArrowCount: {FireFlurrySeekingArrow.critMaxArrowCount}, critBaseArrowReloadDuration: {FireFlurrySeekingArrow.critBaseArrowReloadDuration}");
 
             FireFlurrySeekingArrow.critMaxArrowCount = AdditiveScaling(6, 2, level);
             if (characterBodyLevelup.TryGetComponent(out HuntressTracker huntressTracker))
@@ -64,7 +64,7 @@ namespace SkillsPlusPlus.Modifiers
             }
             else
             {
-                Logger.Warning($"Could not locate the HuntressTracker component on {characterBodyLevelup}");
+                Log.Warning($"Could not locate the HuntressTracker component on {characterBodyLevelup}");
             }
         }
     }
@@ -80,12 +80,12 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-            Logger.Debug($"OnSkillLeveledUp(level: {level})");
-            Logger.Debug($"Glaive stats - max bounces: {ThrowGlaive.maxBounceCount}, damage coefficient: {ThrowGlaive.damageCoefficientPerBounce}, glaiveBounceRange: {ThrowGlaive.glaiveBounceRange}");
+            Log.Debug($"OnSkillLeveledUp(level: {level})");
+            Log.Debug($"Glaive stats - max bounces: {ThrowGlaive.maxBounceCount}, damage coefficient: {ThrowGlaive.damageCoefficientPerBounce}, glaiveBounceRange: {ThrowGlaive.glaiveBounceRange}");
             ThrowGlaive.maxBounceCount = AdditiveScaling(6, 1, level);
             ThrowGlaive.damageCoefficient = MultScaling(2.5f, 0.1f, level);
             ThrowGlaive.glaiveBounceRange = AdditiveScaling(35, 10, level);
-            Logger.Debug($"Glaive stats - max bounces: {ThrowGlaive.maxBounceCount}, damage coefficient: {ThrowGlaive.damageCoefficientPerBounce}, glaiveBounceRange: {ThrowGlaive.glaiveBounceRange}");
+            Log.Debug($"Glaive stats - max bounces: {ThrowGlaive.maxBounceCount}, damage coefficient: {ThrowGlaive.damageCoefficientPerBounce}, glaiveBounceRange: {ThrowGlaive.glaiveBounceRange}");
         }
 
     }
@@ -119,7 +119,7 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-            Logger.Debug($"ArrowRain stats - arrowRainRadius: {ArrowRain.arrowRainRadius}, damageCoefficient: {ArrowRain.damageCoefficient}, prefabScale {ArrowRain.projectilePrefab.transform.localScale}");
+            Log.Debug($"ArrowRain stats - arrowRainRadius: {ArrowRain.arrowRainRadius}, damageCoefficient: {ArrowRain.damageCoefficient}, prefabScale {ArrowRain.projectilePrefab.transform.localScale}");
             ArrowRain.arrowRainRadius = MultScaling(7.5f, 0.25f, level);
             ArrowRain.damageCoefficient = MultScaling(2.2f, 0.2f, level);
 
@@ -143,7 +143,7 @@ namespace SkillsPlusPlus.Modifiers
             if (skillState is FireArrowSnipe snipeState)
             {
                 snipeState.damageCoefficient = MultScaling(snipeState.damageCoefficient, 0.2f, level);
-                Logger.Debug($"damageCoefficient: {snipeState.damageCoefficient}");
+                Log.Debug($"damageCoefficient: {snipeState.damageCoefficient}");
             }
         }
 

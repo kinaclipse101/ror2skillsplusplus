@@ -160,9 +160,9 @@ namespace SkillsPlusPlus.Source.Modifiers
             }
             else 
             {
-                Logger.Error(il.Method.Name + " IL Hook failed!");
+                Log.Error(il.Method.Name + " IL Hook failed!");
             }
-            Logger.Debug("salvage = " + il.ToString());
+            Log.Debug("salvage = " + il.ToString());
         }
 
         public override void OnSkillEnter(BaseState skillState, int level)
@@ -171,10 +171,10 @@ namespace SkillsPlusPlus.Source.Modifiers
 
             if (skillState is Salvage salvage)
             {
-                Logger.Debug("Salvage");
+                Log.Debug("Salvage");
                 salvage.itemsToDrop = AdditiveScaling(4, 1, level);
                 salvage.delayBetweenDrops = (salvage.delayBetweenDrops * 4) / salvage.itemsToDrop;
-                Logger.Debug("Salvage delay = " + salvage.delayBetweenDrops);
+                Log.Debug("Salvage delay = " + salvage.delayBetweenDrops);
                 //salvage.delayBetweenDrops = AdditiveScaling(salvage.itemsToDrop, 1, level);
             } 
             
@@ -214,28 +214,28 @@ namespace SkillsPlusPlus.Source.Modifiers
                     {
                         int level = 0;
                         float newdecay = 1;
-                        SkillUpgrade[] skillUpgrades = tinkerProjectile.ownerBody.gameObject.GetComponents<SkillUpgrade>();
+                        /*SkillUpgrade[] skillUpgrades = tinkerProjectile.ownerBody.gameObject.GetComponents<SkillUpgrade>();
                         foreach (var upgrade in skillUpgrades)
                         {
-                            Logger.Debug(upgrade.targetBaseSkillName);
+                            Log.Debug(upgrade.targetBaseSkillName);
                             if (upgrade.targetBaseSkillName == "Tinker")
                             {
                                 level = upgrade.skillLevel;
                             }
-                        }
+                        }*/
 
                         if (level >= 2)
                         {
                             newdecay += 0.5f/2f * (level - level % 2);
                         }
-                        Logger.Debug("decayvalue time = " + newdecay);
+                        Log.Debug("decayvalue time = " + newdecay);
                         return newdecay;
                     }
                 );
             }
             else 
             {
-                Logger.Error(il.Method.Name + " IL Hook failed!");
+                Log.Error(il.Method.Name + " IL Hook failed!");
             }
             
             if (c.TryGotoNext(
@@ -251,31 +251,31 @@ namespace SkillsPlusPlus.Source.Modifiers
                     {
                         int level = 0;
                         float newdecay = 1;
-                        SkillUpgrade[] skillUpgrades = tinkerProjectile.ownerBody.gameObject.GetComponents<SkillUpgrade>();
+                        /*SkillUpgrade[] skillUpgrades = tinkerProjectile.ownerBody.gameObject.GetComponents<SkillUpgrade>();
                         foreach (var upgrade in skillUpgrades)
                         {
-                            Logger.Debug(upgrade.targetBaseSkillName);
+                            Log.Debug(upgrade.targetBaseSkillName);
                             if (upgrade.targetBaseSkillName == "Tinker")
                             {
                                 level = upgrade.skillLevel;
                             }
-                        }
+                        }*/
 
                         if (level >= 2)
                         {
                             newdecay += 0.5f/2f * (level - level % 2);
                         }
-                        Logger.Debug("decayvalue else time = " + newdecay);
+                        Log.Debug("decayvalue else time = " + newdecay);
                         return newdecay;
                     }
                 );
             }
             else 
             {
-                Logger.Error(il.Method.Name + " IL Hook failed!");
+                Log.Error(il.Method.Name + " IL Hook failed!");
             }
             
-            Logger.Debug("managemonster = " + il.ToString());
+            Log.Debug("managemonster = " + il.ToString());
         }
 
         private void TinkerProjectileOnManageMonster(ILContext il)
@@ -294,27 +294,27 @@ namespace SkillsPlusPlus.Source.Modifiers
                 c.EmitDelegate<Func<RoR2.Projectile.TinkerProjectile, float>>((tinkerProjectile) =>
                     {
                         int level = 0;
-                        SkillUpgrade[] skillUpgrades = tinkerProjectile.ownerBody.gameObject.GetComponents<SkillUpgrade>();
+                        /*SkillUpgrade[] skillUpgrades = tinkerProjectile.ownerBody.gameObject.GetComponents<SkillUpgrade>();
                         foreach (var upgrade in skillUpgrades)
                         {
-                            Logger.Debug(upgrade.targetBaseSkillName);
+                            Log.Debug(upgrade.targetBaseSkillName);
                             if (upgrade.targetBaseSkillName == "Tinker")
                             {
                                 level = upgrade.skillLevel;
                             }
-                        }
+                        }*/
 
-                        Logger.Debug("debuff time = " + MultScaling(4f, 0.25f, level));
+                        Log.Debug("debuff time = " + MultScaling(4f, 0.25f, level));
                         return MultScaling(4f, 0.25f, level);
                     }
                 );
             }
             else 
             {
-                Logger.Error(il.Method.Name + " IL Hook failed!");
+                Log.Error(il.Method.Name + " IL Hook failed!");
             }
             
-            Logger.Debug("managemonster = " + il.ToString());
+            Log.Debug("managemonster = " + il.ToString());
         }
 
         public override void OnSkillEnter(BaseState skillState, int level)
@@ -323,13 +323,13 @@ namespace SkillsPlusPlus.Source.Modifiers
 
             if (skillState is CastTinker tinker)
             {
-                Logger.Debug("CastTinker");
+                Log.Debug("CastTinker");
                 
                 tinker.projectilePrefab.transform.localScale = new Vector3(
                     MultScaling(1, .25f, level),
                     MultScaling(1, .25f, level),
                     MultScaling(1, .25f, level));
-                Logger.Debug("scale = " + tinker.projectilePrefab.transform.localScale);
+                Log.Debug("scale = " + tinker.projectilePrefab.transform.localScale);
                 //tinker.
             } 
         }

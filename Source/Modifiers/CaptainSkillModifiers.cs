@@ -7,7 +7,7 @@ using EntityStates.CaptainSupplyDrop;
 using RoR2;
 using RoR2.Projectile;
 using RoR2.Skills;
-
+using SkillsPlusPlus.Source;
 using static R2API.RecalculateStatsAPI;
 
 namespace SkillsPlusPlus.Modifiers
@@ -80,13 +80,13 @@ namespace SkillsPlusPlus.Modifiers
     {
         private static int diabloStrikeProjectileCatalogIndex = -1337;
         private static float fuseDuration;
-        private static SkillUpgrade diabloSkill;
+        private static SkillUpgradeHelper.SkillUpgrades diabloSkill;
 
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
 
-            if (!diabloSkill)
+            if (diabloSkill == null)
             {
                 diabloSkill = registeredSkill;
             }
@@ -150,7 +150,7 @@ namespace SkillsPlusPlus.Modifiers
 
         private void RecalculateStats(CharacterBody sender, StatHookEventArgs args)
         {
-            if (!sender || !diabloSkill)
+            if (!sender || diabloSkill == null)
             {
                 return;
             }

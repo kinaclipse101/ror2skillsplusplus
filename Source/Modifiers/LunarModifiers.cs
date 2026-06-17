@@ -6,6 +6,7 @@ using EntityStates.GlobalSkills.LunarNeedle;
 using RoR2;
 using RoR2.Projectile;
 using RoR2.Skills;
+using SkillsPlusPlus.Source;
 using UnityEngine;
 using static R2API.RecalculateStatsAPI;
 
@@ -28,7 +29,7 @@ namespace SkillsPlusPlus.Modifiers
 
             if (sender.baseNameToken == "HERETIC_BODY_NAME") /*Heretic*/
             {
-                SkillUpgrade[] upgrades = sender.GetComponents<SkillUpgrade>();
+                /*SkillUpgrade[] upgrades = sender.GetComponents<SkillUpgrade>();
 
                 foreach (SkillUpgrade upgrade in upgrades)
                 {
@@ -49,12 +50,12 @@ namespace SkillsPlusPlus.Modifiers
                         default:
                             if (!HereticSupportedPassiveUpgrades.Contains(upgrade.targetGenericSkill.name) && !HereticSkillsWarned.Contains(upgrade.targetGenericSkill.name))
                             {
-                                Logger.Warning($"Heretic Skill {upgrade.targetGenericSkill.name} found but no bonuses may have been applied. If this skill is supported by SkillsPlusPlus, please add it to LunarModifiers.HereticSupportedPassiveUpgrades!");
+                                Log.Warning($"Heretic Skill {upgrade.targetGenericSkill.name} found but no bonuses may have been applied. If this skill is supported by SkillsPlusPlus, please add it to LunarModifiers.HereticSupportedPassiveUpgrades!");
                                 HereticSkillsWarned.Add(upgrade.targetGenericSkill.name);
                             }
                             break;
                     }
-                }
+                }*/
             }
         }
 
@@ -148,13 +149,13 @@ namespace SkillsPlusPlus.Modifiers
         internal class HeartOfHeresySkillModifier : BaseSkillModifier
         {
             private static float baseDamageCoefficient = 0f;
-            private static SkillUpgrade heartSkill;
+            private static SkillUpgradeHelper.SkillUpgrades heartSkill;
 
             public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
             {
                 base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
 
-                if (!heartSkill)
+                if (heartSkill == null)
                 {
                     heartSkill = registeredSkill;
                     baseDamageCoefficient = Detonate.baseDamageCoefficient;
@@ -172,7 +173,7 @@ namespace SkillsPlusPlus.Modifiers
             {
                 orig.Invoke((LunarDetonatorPassiveAttachment.DamageListener)self, damageReport);
 
-                float rollValue = damageReport.damageInfo.procCoefficient * (((heartSkill ? heartSkill.skillLevel : 0) * 0.20f));
+                float rollValue = damageReport.damageInfo.procCoefficient * (((heartSkill?.skillLevel ?? 0) * 0.20f));
 
                 int assuredStacks = (int)Mathf.Floor(rollValue);
                 float remainder = rollValue - Mathf.Floor(rollValue);

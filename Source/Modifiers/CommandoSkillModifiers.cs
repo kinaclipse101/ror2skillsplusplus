@@ -48,7 +48,7 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillEnter(FireFMJ skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
-            Logger.Debug($"recoilAmplitude: {skillState.recoilAmplitude}, damageCoefficient: {skillState.damageCoefficient}");
+            Log.Debug($"recoilAmplitude: {skillState.recoilAmplitude}, damageCoefficient: {skillState.damageCoefficient}");
             skillState.projectilePrefab.transform.localScale = new Vector3(2.90f, 2.19f, 3.86f) * AdditiveScaling(1, 0.2f, level);
             if (skillState.projectilePrefab.TryGetComponent(out ProjectileSimple projectileSimple))
             {
@@ -74,7 +74,7 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillEnter(FireShotgunBlast skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
-            Logger.Debug($"procCoefficient: {skillState.procCoefficient}, damageCoefficient: {skillState.damageCoefficient}, maxDistance: {skillState.maxDistance}");
+            Log.Debug($"procCoefficient: {skillState.procCoefficient}, damageCoefficient: {skillState.damageCoefficient}, maxDistance: {skillState.maxDistance}");
             skillState.bulletCount = (int)MultScaling(skillState.bulletCount, 0.3f, level);
             skillState.maxDistance = MultScaling(skillState.maxDistance, 0.20f, level);
         }
@@ -90,7 +90,7 @@ namespace SkillsPlusPlus.Modifiers
             float duration = AdditiveScaling(0, 0.75f, level);
             if (duration > 0)
             {
-                Logger.Debug($"adding buff for {duration} seconds");
+                Log.Debug($"adding buff for {duration} seconds");
                 skillState.outer.commonComponents.characterBody.AddTimedBuff(Buffs.Immune, duration);
             }
         }
@@ -180,7 +180,7 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-            Logger.Debug($"Barrage - baseBulletCount: {FireBarrage.baseBulletCount}, baseDurationBetweenShots: {FireBarrage.baseDurationBetweenShots}, totalDuration: {FireBarrage.totalDuration}, bulletRadius: {FireBarrage.bulletRadius}");
+            Log.Debug($"Barrage - baseBulletCount: {FireBarrage.baseBulletCount}, baseDurationBetweenShots: {FireBarrage.baseDurationBetweenShots}, totalDuration: {FireBarrage.totalDuration}, bulletRadius: {FireBarrage.bulletRadius}");
 
             FireBarrage.baseBulletCount = (int)MultScaling(6, 0.3f, level);
             FireBarrage.baseDurationBetweenShots = MultScaling(0.12f, -0.20f, level);
@@ -197,7 +197,7 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillEnter(ThrowGrenade skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
-            Logger.Debug($"force: {skillState.force}, damageCoefficient: {skillState.damageCoefficient}");
+            Log.Debug($"force: {skillState.force}, damageCoefficient: {skillState.damageCoefficient}");
             skillState.force = MultScaling(skillState.force, 0.2f, level);
             skillState.damageCoefficient = MultScaling(skillState.damageCoefficient, 0.2f, level);
             if (skillState.projectilePrefab.TryGetComponent(out ProjectileImpactExplosion projectileImpactExplosion))

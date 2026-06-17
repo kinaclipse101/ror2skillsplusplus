@@ -45,7 +45,7 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillEnter(GroundLight2 skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
-            Logger.Debug($"damageCoefficient: {skillState.damageCoefficient}, baseDuration: {skillState.baseDuration}");
+            Log.Debug($"damageCoefficient: {skillState.damageCoefficient}, baseDuration: {skillState.baseDuration}");
             skillState.baseDuration = MultScaling(0.6f, -.15f, level);
             skillState.damageCoefficient = MultScaling(1.3f, 0.2f, level);
         }

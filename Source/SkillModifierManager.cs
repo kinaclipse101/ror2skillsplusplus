@@ -4,13 +4,13 @@ using System.Linq;
 using System.Reflection;
 using RoR2.Skills;
 using SkillsPlusPlus.Modifiers;
+using SkillsPlusPlus.Source;
 using UnityEngine;
 
 namespace SkillsPlusPlus
 {
     public sealed class SkillModifierManager
     {
-
         private static readonly Dictionary<string, BaseSkillModifier> skillNameToModifierMap = new Dictionary<string, BaseSkillModifier>();
         private static readonly Dictionary<Type, BaseSkillModifier> typeToModifierMap = new Dictionary<Type, BaseSkillModifier>();
 
@@ -38,11 +38,11 @@ namespace SkillsPlusPlus
                     ConstructorInfo constructorInfo = type.GetConstructor(new Type[0]);
                     if (constructorInfo == null)
                     {
-                        Logger.Debug($"Failed to find constructor info for {type.FullName}");
-                        Logger.Debug("Other constructors included");
+                        Log.Debug($"Failed to find constructor info for {type.FullName}");
+                        Log.Debug("Other constructors included");
                         foreach (ConstructorInfo info in type.GetConstructors())
                         {
-                            Logger.Debug(info);
+                            Log.Debug(info);
                         }
                         continue;
                     }
@@ -61,8 +61,8 @@ namespace SkillsPlusPlus
                             {
                                 if (skillNameToModifierMap.TryGetValue(skillName, out BaseSkillModifier existingModifier))
                                 {
-                                    Logger.Warning("Skill modifier conflict!!!");
-                                    Logger.Warning($"Cannot add {someSkillModifier.GetType().FullName} since {existingModifier.GetType().FullName} already exists for skill named {skillName}");
+                                    Log.Warning("Skill modifier conflict!!!");
+                                    Log.Warning($"Cannot add {someSkillModifier.GetType().FullName} since {existingModifier.GetType().FullName} already exists for skill named {skillName}");
                                     continue;
                                 }
                                 skillNameToModifierMap[skillName] = skillModifier;
@@ -71,8 +71,8 @@ namespace SkillsPlusPlus
                             {
                                 if (typeToModifierMap.TryGetValue(stateType, out BaseSkillModifier existingModifier))
                                 {
-                                    Logger.Warning("Skill modifier conflict!!!");
-                                    Logger.Warning($"Cannot add {someSkillModifier.GetType().FullName} since {existingModifier.GetType().FullName} already exists for the entity state {stateType.FullName}");
+                                    Log.Warning("Skill modifier conflict!!!");
+                                    Log.Warning($"Cannot add {someSkillModifier.GetType().FullName} since {existingModifier.GetType().FullName} already exists for the entity state {stateType.FullName}");
                                     continue;
                                 }
                                 typeToModifierMap[stateType] = skillModifier;
@@ -82,7 +82,7 @@ namespace SkillsPlusPlus
                 }
                 catch (Exception error)
                 {
-                    Logger.Error(error);
+                    Log.Error(error);
                     continue;
                 }
 

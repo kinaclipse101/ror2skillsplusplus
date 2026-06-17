@@ -14,18 +14,18 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillEnter(Slash slash, int level)
         {
             base.OnSkillEnter(slash, level);
-            Logger.Debug($"hitPauseDuration: {slash.hitPauseDuration}, damageCoefficient: {slash.damageCoefficient}");
+            Log.Debug($"hitPauseDuration: {slash.hitPauseDuration}, damageCoefficient: {slash.damageCoefficient}");
             slash.hitPauseDuration = MultScaling(slash.hitPauseDuration, -0.1f, level);
             slash.baseDuration = MultScaling(slash.baseDuration, -0.15f, level);
             slash.damageCoefficient = MultScaling(slash.damageCoefficient, 0.20f, level);
-            Logger.Debug($"hitPauseDuration: {slash.hitPauseDuration}, damageCoefficient: {slash.damageCoefficient}");
+            Log.Debug($"hitPauseDuration: {slash.hitPauseDuration}, damageCoefficient: {slash.damageCoefficient}");
         }
 
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-            Logger.Debug($"baseDurationBeforeInterruptable: {Slash.baseDurationBeforeInterruptable}");
-            Logger.Debug($"comboFinisherDamageCoefficient: {Slash.comboFinisherDamageCoefficient}, comboFinisherBaseDurationBeforeInterruptable: {Slash.comboFinisherBaseDurationBeforeInterruptable}");
+            Log.Debug($"baseDurationBeforeInterruptable: {Slash.baseDurationBeforeInterruptable}");
+            Log.Debug($"comboFinisherDamageCoefficient: {Slash.comboFinisherDamageCoefficient}, comboFinisherBaseDurationBeforeInterruptable: {Slash.comboFinisherBaseDurationBeforeInterruptable}");
             Slash.comboFinisherDamageCoefficient = MultScaling(4, 0.25f, level); // combined with +25% of damage bonus this is effectively 50% for the final attack
         }
 

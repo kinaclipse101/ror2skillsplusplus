@@ -4,6 +4,7 @@ using R2API;
 using RoR2;
 using RoR2.Skills;
 using System;
+using SkillsPlusPlus.Source;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
@@ -176,7 +177,7 @@ namespace SkillsPlusPlus.Modifiers
     [SkillLevelModifier("ResetRevolver", typeof(FireSidearmResetRevolver))]
     internal class BanditSkillResetRevolverModifier : SimpleSkillModifier<FireSidearmResetRevolver>
     {
-        private static SkillUpgrade resetSkill;
+        private static SkillUpgradeHelper.SkillUpgrades resetSkill;
 
         public override void OnSkillEnter(FireSidearmResetRevolver skillState, int level)
         {
@@ -186,7 +187,7 @@ namespace SkillsPlusPlus.Modifiers
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
 
-            if (!resetSkill)
+            if (resetSkill != null)
             {
                 resetSkill = registeredSkill;
             }
@@ -226,13 +227,13 @@ namespace SkillsPlusPlus.Modifiers
     [SkillLevelModifier("SkullRevolver", typeof(FireSidearmSkullRevolver))]
     internal class BanditSkillSkullRevolverModifier : SimpleSkillModifier<FireSidearmSkullRevolver>
     {
-        private static SkillUpgrade revolverSkill;
+        private static SkillUpgradeHelper.SkillUpgrades revolverSkill;
 
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
 
-            if (!revolverSkill)
+            if (revolverSkill == null)
             {
                 revolverSkill = registeredSkill;
             }
@@ -243,7 +244,7 @@ namespace SkillsPlusPlus.Modifiers
             base.OnSkillEnter(skillState, level);
 
             //Attempt to get the skill if it's still invalid.
-            //FindSkillUpgrade(skillState.outer.commonComponents.characterBody, "Bandit2.ResetRevolver");
+            FindSkillUpgrade(skillState.outer.commonComponents.characterBody, "Bandit2.ResetRevolver");
         }
 
         public static void HealthComponent_TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo di)

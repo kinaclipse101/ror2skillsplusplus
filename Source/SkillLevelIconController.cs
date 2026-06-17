@@ -1,4 +1,5 @@
-﻿using Rebindables;
+﻿using System;
+using Rebindables;
 using Rewired;
 using RiskOfOptions;
 using RoR2;
@@ -11,7 +12,6 @@ namespace SkillsPlusPlus
 {
     internal sealed class SkillLevelIconController : MonoBehaviour
     {
-
         private static string BUY_TOKEN = "SKILLS_SLOT_BUY_BTN";
 
         private SkillIcon skillIcon;
@@ -24,7 +24,7 @@ namespace SkillsPlusPlus
         private HGButton buyButton;
 
         private CanvasRenderer CanBuyBorderRenderer;
-        public SkillUpgrade skillUpgrade;
+        public SkillUpgradeHelper.SkillUpgrades skillUpgrades;
 
         private void Awake()
         {
@@ -125,32 +125,25 @@ namespace SkillsPlusPlus
             }
         }
 
-        private void Update()
+        private void OnEnable()
         {
             if (skillIcon)
             {
                 if (skillIcon.targetSkill)  //Prevents errors when morphing to Heretic
                 {
-                    var skillUpgrades = skillIcon.targetSkill?.characterBody?.GetComponents<SkillUpgrade>();
-                    if (skillUpgrades != null)
-                    {
-                        foreach (var skillUpgrade in skillUpgrades)
-                        {
-                            if (skillUpgrade.targetGenericSkill && ((ScriptableObject)skillIcon?.targetSkill.skillDef)?.name == ((ScriptableObject)skillUpgrade.targetGenericSkill.skillDef)?.name)
-                            {
-                                this.skillUpgrade = skillUpgrade;
-                            }
-                        }
-                    }
+                    skillUpgrades = SkillUpgradeHelper.instance.GetAddMasterSkillUpgrade(skillIcon.playerCharacterMasterController.master, skillIcon.targetSkill);
                 }
             }
+        }
 
-            if (skillUpgrade)
+        private void Update()
+        {
+            if (skillUpgrades != null)
             {
-                var canBuySkill = skillUpgrade.CanUpgradeSkill();
+                var canBuySkill = skillUpgrades.CanUpgradeSkill();
                 if (levelTextMesh != null)
                 {
-                    levelTextMesh.text = skillUpgrade.skillLevel > 0 ? skillUpgrade.skillLevel.ToString() : null;
+                    levelTextMesh.text = skillUpgrades.skillLevel > 0 && skillIcon.targetSkill ? skillUpgrades.skillLevel.ToString() : null;
                 }
                 CanBuyBorderRenderer.gameObject.SetActive(canBuySkill);
                 CanBuyBorderRenderer.SetColor(Color.yellow);
@@ -158,55 +151,41 @@ namespace SkillsPlusPlus
                 var masterController = skillIcon?.playerCharacterMasterController;
                 if (masterController)
                 {
-
                     LocalUser localUser = masterController?.networkUser?.localUser;
                     Player inputPlayer = localUser?.inputPlayer;
+                    
+                    if (!skillIcon || inputPlayer == null) return;
                     InputBankTest inputBank = masterController.body.inputBank;
 
-                    if (inputPlayer != null)
+                    SkillSlot skillSlot = skillIcon.targetSkillSlot;
+                    int skillAction = skillSlot switch
                     {
-                        //if (localUser.eventSystem.currentInputSource == MPEventSystem.InputSource.Gamepad) {
-                        if (skillIcon != null)
-                        {
-                            SkillSlot skillSlot = skillIcon.targetSkillSlot;
-                            int skillAction = 0;
-                            switch (skillSlot)
-                            {
-                                case SkillSlot.None:
-                                    skillAction = 0;
-                                    break;
-                                case SkillSlot.Primary:
-                                    skillAction = RewiredConsts.Action.PrimarySkill;
-                                    break;
-                                case SkillSlot.Secondary:
-                                    skillAction = RewiredConsts.Action.SecondarySkill;
-                                    break;
-                                case SkillSlot.Utility:
-                                    skillAction = RewiredConsts.Action.UtilitySkill;
-                                    break;
-                                case SkillSlot.Special:
-                                    skillAction = RewiredConsts.Action.SpecialSkill;
-                                    break;
-                            }
-                            UpgradeButton.SetActive(canBuySkill && inputBank.GetButtonState(SkillOptions.hotkey).down || inputPlayer.GetButton(RewiredConsts.Action.Info));
-                            if (skillAction != 0 && inputPlayer.GetButtonDown(skillAction) && inputBank.GetButtonState(SkillOptions.hotkey).down)
-                            {
-                                this.OnBuySkill();
-                            }
-                        }
-                        //} else {
-                        //    UpgradeButton.SetActive(canBuySkill && inputPlayer.GetButton(RewiredConsts.Action.Info));
-                        //}
+                        SkillSlot.None => 0,
+                        SkillSlot.Primary => RewiredConsts.Action.PrimarySkill,
+                        SkillSlot.Secondary => RewiredConsts.Action.SecondarySkill,
+                        SkillSlot.Utility => RewiredConsts.Action.UtilitySkill,
+                        SkillSlot.Special => RewiredConsts.Action.SpecialSkill,
+                        _ => 0
+                    };
+                    UpgradeButton.SetActive(canBuySkill && (inputBank.GetButtonState(SkillOptions.hotkey).down || inputPlayer.GetButton(RewiredConsts.Action.Info)));
+                    if (skillAction != 0 && inputPlayer.GetButtonDown(skillAction) && inputBank.GetButtonState(SkillOptions.hotkey).down)
+                    {
+                        this.OnBuySkill();
                     }
                 }
+            }
+            else
+            {
+                Log.Debug("skill upgrades null");
+                //skillUpgrades = SkillUpgradeHelper.instance.GetAddMasterSkillUpgrade(skillIcon.playerCharacterMasterController.master, skillIcon.targetSkill);
             }
         }
 
         private void OnBuySkill()
         {
-            if (skillUpgrade)
+            if (skillUpgrades != null)
             {
-                skillUpgrade.OnBuySkill();
+                skillUpgrades.skillPointsController.CmdOnBuySkill(skillUpgrades);
             }
         }
     }

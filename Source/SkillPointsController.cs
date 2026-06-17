@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using EntityStates;
 using Rebindables;
 using Rewired;
@@ -17,49 +18,37 @@ namespace SkillsPlusPlus
     [RequireComponent(typeof(NetworkIdentity))]
     public sealed class SkillPointsController : NetworkBehaviour
     {
-
-        // private const int SKILL_DISABLED = -1;
-
         private PlayerCharacterMasterController playerCharacterMasterController;
 
         private CharacterBody body => playerCharacterMasterController.master?.GetBody();
         private SkillLocator skillLocator => body?.skillLocator;
 
-        private TeamIndex PlayerTeamIndex
-        {
-            get
-            {
-                if (playerCharacterMasterController.master.hasBody)
-                {
-                    return playerCharacterMasterController.master.GetBody().teamComponent.teamIndex;
-                }
-                return TeamIndex.None;
-            }
-        }
+        private TeamIndex PlayerTeamIndex => playerCharacterMasterController.master.hasBody ? playerCharacterMasterController.master.GetBody().teamComponent.teamIndex : TeamIndex.None;
 
         [SyncVar]
         public bool isSurvivorEnabled;
 
         [SyncVar]
-        private int earnedSkillPoints = 0;
+        private int earnedSkillPoints;
 
         [SyncVar]
-        private int unspentSkillPoints = 0;
+        private int unspentSkillPoints;
 
         [SyncVar]
         private int levelsPerSkillPoint = SkillOptions.levelsPerSkillPoint.Value;
 
         [SyncVar]
-        public bool multScalingLinear = false;
+        public bool multScalingLinear;
 
         public bool hasUnspentPoints => unspentSkillPoints > 0;
 
         private Dictionary<string, int> transferrableSkillUpgrades = new Dictionary<string, int>();
+        
 
         private void Awake()
         {
             multScalingLinear = SkillOptions.multScalingLinear.Value;
-            Logger.Debug($"levelsPerSkillPoint: {this.levelsPerSkillPoint}");
+            Log.Debug($"levelsPerSkillPoint: {this.levelsPerSkillPoint}");
 
             this.playerCharacterMasterController = this.GetComponent<PlayerCharacterMasterController>();
         }
@@ -95,24 +84,28 @@ namespace SkillsPlusPlus
 
         private void OnBodyStart(CharacterBody body)
         {
-            this.isSurvivorEnabled = !SkillOptions.disabledSurvivors.Value.Contains(body.GetDisplayName());
-            Logger.Debug($"OnBodyStart({body})");
+            this.isSurvivorEnabled = !SkillOptions.disabledSurvivorList.Contains(body.GetDisplayName());
+            Log.Debug($"OnBodyStart({body})");
             // attempt to transfer and apply skill levels
-            var skillUpgrades = body.GetComponents<SkillUpgrade>();
+            foreach (GenericSkill genericSkill in body.GetComponents<GenericSkill>())
+            {
+                SkillUpgradeHelper.SkillUpgrades returnVal = SkillUpgradeHelper.instance.GetAddMasterSkillUpgrade(playerCharacterMasterController.master, genericSkill);
+                Log.Debug($"attempting to add master skill upgrade !! {returnVal}");
+                returnVal.RefreshUpgrades();
+                returnVal.genericSkill = genericSkill;
+            }
+            
+            /*var skillUpgrades = body.GetComponents<SkillUpgrade>();
             foreach (var skillUpgrade in skillUpgrades)
             {
                 skillUpgrade.SetSkillPointsController(this);
             }
-            TransferSkillUpgrades(body);
-
-#if DEBUG
-            body.healthComponent.godMode = true;
-#endif
+            TransferSkillUpgrades(body);*/
         }
 
-        private bool bMorphedToHeretic = false;
+        private bool bMorphedToHeretic;
 
-        [Server]
+        /*[Server]
         private void TransferSkillUpgrades(CharacterBody body)
         {
             unspentSkillPoints = SkillPointsAtLevel((int)body.level);
@@ -137,7 +130,7 @@ namespace SkillsPlusPlus
             {
                 bMorphedToHeretic = true;
             }
-        }
+        }*/
 
         #region Hooks
 
@@ -184,42 +177,31 @@ namespace SkillsPlusPlus
                 //TeamManager.instance.SetTeamLevel(this.PlayerTeamIndex, TeamManager.instance.GetTeamLevel(this.PlayerTeamIndex) + 1);
                 CmdGiveSkillPoint();
             }
-            if (Input.GetKeyDown(KeyCode.Keypad1) && playerCharacterMasterController != null && body != null)
+            
+            if (Input.GetKeyDown(KeyCode.Minus) && this.PlayerTeamIndex != TeamIndex.None)
             {
-                GameObject teleporter = GameObject.Find("Teleporter1(Clone)");
-                Transform spawnLocation = body.transform;
-                if (teleporter != null && teleporter.TryGetComponent(out TeleporterInteraction teleporterInteraction))
+                foreach (GenericSkill genericSkill in body.GetComponents<GenericSkill>())
                 {
-                    var portalGameObject = GameObject.Instantiate(teleporterInteraction.shopPortalSpawnCard.prefab, spawnLocation.position, spawnLocation.rotation, null);
-                    NetworkServer.Spawn(portalGameObject);
+                    SkillUpgradeHelper.SkillUpgrades returnVal = SkillUpgradeHelper.instance.GetAddMasterSkillUpgrade(playerCharacterMasterController.master, genericSkill);
+                    returnVal.RefreshUpgrades();
+                    Log.Debug($"refreshed skill {returnVal.skillName}");
+                    //skillUpgrade.targetGenericSkill = genericSkill;
+                }
+                Log.Debug($"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                foreach (List<SkillUpgradeHelper.SkillUpgrades> genericSkill in SkillUpgradeHelper.instance.masterSkills.Values)
+                {
+                    foreach (SkillUpgradeHelper.SkillUpgrades skillUpgrades in genericSkill)
+                    {
+                        Log.Debug(skillUpgrades.skillName);
+                    }
                 }
             }
-            if (Input.GetKeyDown(KeyCode.Keypad2) && this.playerCharacterMasterController != null)
+            
+            if (Input.GetKeyDown(KeyCode.LeftBracket) && this.PlayerTeamIndex != TeamIndex.None)
             {
-                this.playerCharacterMasterController.master?.inventory.GiveItemString("UtilitySkillMagazine");
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad3) && this.playerCharacterMasterController != null)
-            {
-                this.playerCharacterMasterController.master?.inventory.GiveItemString("ExtraLife");
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad4) && this.playerCharacterMasterController != null)
-            {
-                this.body.skillLocator.ResetSkills();
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad5) && this.playerCharacterMasterController != null)
-            {
-                this.playerCharacterMasterController.master?.inventory.GiveItemString("CIScepter");
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad6) && this.playerCharacterMasterController != null)
-            {
-                this.playerCharacterMasterController.master?.inventory.GiveItemString("Syringe", 5);
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad7) && this.playerCharacterMasterController != null)
-            {
-                this.playerCharacterMasterController.master?.inventory.GiveItemString("LunarPrimaryReplacement");
-                this.playerCharacterMasterController.master?.inventory.GiveItemString("LunarUtilityReplacement");
-                this.playerCharacterMasterController.master?.inventory.GiveItemString("LunarSecondaryReplacement");
-                this.playerCharacterMasterController.master?.inventory.GiveItemString("LunarSpecialReplacement");
+                SkillUpgradeHelper.instance.masterSkills =
+                    new Dictionary<CharacterMaster, List<SkillUpgradeHelper.SkillUpgrades>>();
+                Log.Debug("cleared ");
             }
 #endif
         }
@@ -250,7 +232,7 @@ namespace SkillsPlusPlus
         [Server]
         private void CmdGiveSkillPoint()
         {
-            Logger.Debug("Giving points");
+            Log.Debug("Giving points");
             this.earnedSkillPoints++;
             this.unspentSkillPoints++;
         }
@@ -265,6 +247,26 @@ namespace SkillsPlusPlus
             }
             return (characterLevel / this.levelsPerSkillPoint);
 #endif
+        }
+
+        [Command]
+        public void CmdOnBuySkill(SkillUpgradeHelper.SkillUpgrades skillUpgrades) {
+            if (!isSurvivorEnabled) return;
+            if (!skillUpgrades.CanUpgradeSkill()) return;
+            
+            DeductSkillPoints(1);
+            skillUpgrades.skillLevel += 1;
+            SkillUpgradeHelper.instance.GetAddMasterSkillUpgrade(playerCharacterMasterController.master, skillUpgrades.genericSkill, skillUpgrades.skillLevel);
+            Log.Debug($"CmdOnBuySkill({skillUpgrades.skillName}): skillLevel: {skillUpgrades.skillLevel}");
+
+
+            //skillUpgrade.RefreshUpgrades();
+            /*var allSkillUpgrades = this.GetComponents<SkillUpgrade>();
+            foreach (var skillUpgrade in allSkillUpgrades) {
+                if (skillUpgrade.targetBaseSkillName == targetSkillName) {
+
+                }
+            }*/
         }
     }
 }
