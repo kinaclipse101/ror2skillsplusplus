@@ -278,8 +278,8 @@ namespace SkillsPlusPlus.Modifiers
     {
         private static BuffDef FeatherFallBuff;
         private static int ConcussiveProjectileCatalogIndex = -1337;
-        private static float baseThrowForce = 0;
-        private static SkillUpgradeHelper.SkillUpgrades ConcussiveMineSkill;
+        private float baseThrowForce = 0;
+        private SkillUpgradeHelper.SkillUpgrades ConcussiveMineSkill;
 
         public override void OnSkillEnter(FireMineConcussive skillState, int level)
         {
@@ -320,9 +320,26 @@ namespace SkillsPlusPlus.Modifiers
             RegisterFeatherFallBuff();
 
             On.RoR2.HealthComponent.TakeDamage += new On.RoR2.HealthComponent.hook_TakeDamage(RailgunnerConcussiveMineSkillModifier.HealthComponent_TakeDamage);
+            registeredSkill.characterMaster.onPlayerBodyDamaged += CharacterMasterOnonPlayerBodyDamaged;
+            registeredSkill.characterMaster.GetBody().healthComponent.
             On.RoR2.CharacterBody.FixedUpdate += new On.RoR2.CharacterBody.hook_FixedUpdate(RailgunnerConcussiveMineSkillModifier.CharacterBody_FixedUpdate);
 
             base.SetupSkill();
+        }
+
+        private void CharacterMasterOnonPlayerBodyDamaged(PlayerCharacterMasterController obj)
+        {
+            if (di.inflictor && di.inflictor.TryGetComponent(out ProjectileController controller) && controller.catalogIndex == ConcussiveProjectileCatalogIndex)
+            {
+                if (registeredSkill.skillLevel != 0)
+                {
+                    self.body.AddTimedBuff(FeatherFallBuff, 1.0f + (0.5f * ConcussiveMineSkill.skillLevel));
+                    if (self.body != ConcussiveMineSkill.genericSkill.characterBody)
+                    {
+                        self?.body?.characterMotor?.AddDisplacement(new Vector3(0f, 5f, 0f));
+                    }
+                }
+            }
         }
 
         public void RegisterFeatherFallBuff()
@@ -341,19 +358,10 @@ namespace SkillsPlusPlus.Modifiers
             ContentAddition.AddBuffDef(buffDef);
         }
 
-        public static void HealthComponent_TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo di)
+        public void HealthComponent_TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo di)
         {
-            if (di.inflictor && di.inflictor.TryGetComponent(out ProjectileController controller) && controller.catalogIndex == ConcussiveProjectileCatalogIndex)
-            {
-                if (ConcussiveMineSkill.skillLevel != 0)
-                {
-                    self.body.AddTimedBuff(FeatherFallBuff, 1.0f + (0.5f * ConcussiveMineSkill.skillLevel));
-                    if (self.body != ConcussiveMineSkill.genericSkill.characterBody)
-                    {
-                        self?.body?.characterMotor?.AddDisplacement(new Vector3(0f, 5f, 0f));
-                    }
-                }
-            }
+            
+            
 
             orig.Invoke(self, di);
         }
