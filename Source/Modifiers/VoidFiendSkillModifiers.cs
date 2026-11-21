@@ -15,23 +15,9 @@ using GlobalEventManager = On.RoR2.GlobalEventManager;
 
 namespace SkillsPlusPlus.Source.Modifiers
 {
-    internal class VoidFiendSkillModifiers
+    [SkillLevelModifier(["FireHandBeam", "ChargeHandBeam", "FireCorruptBeam", "ChargeCorruptHandBeam"], typeof(FireHandBeam), typeof(ChargeHandBeam), typeof(FireCorruptHandBeam), typeof(ChargeCorruptHandBeam))]
+    class VoidFiendHandBeamSkillModifier : BaseSkillModifier 
     {
-    }
-
-
-    //[SkillLevelModifier("PlaceSpiderMine", typeof(ChargeCrabCannon), typeof(ChargeCorruptHandBeam), typeof(ChargeCrushBase), typeof(ChargeCrushHealth), typeof(CrushBase), typeof(CrushHealth), typeof(EnterSwingMelee), typeof(FireBlaster1), typeof(FireBlaster2), typeof(FireBlaster3), typeof(FireBlaster4),
-    //    typeof(FireBlasterBase), typeof(FireCorruptDisks), typeof(FireCorruptHandBeam), typeof(FireCrabCannon), typeof(FireRepulsion), typeof(FireTwinBlaster), typeof(ReadyMegaBlaster), typeof(Suppress)
-    //    , typeof(SwingMelee1), typeof(SwingMelee2), typeof(SwingMelee3), typeof(SwingMeleeBase))]
-    //class VoidFiendSkillModifier : BaseSkillModifier {
-
-    //    public override void OnSkillEnter(BaseState skillState, int level) {
-    //        Logger.Debug("Skill entered: " + skillState.ToString());
-    //    }
-
-    //}
-    [SkillLevelModifier(new[] { "FireHandBeam", "ChargeHandBeam", "FireCorruptBeam", "ChargeCorruptHandBeam" }, typeof(FireHandBeam), typeof(ChargeHandBeam), typeof(FireCorruptHandBeam), typeof(ChargeCorruptHandBeam))]
-    class VoidFiendHandBeamSkillModifier : BaseSkillModifier {
         CharacterBody surv;
         private int debuffTimerAdd;
         public BuffDef VoidFiendSpeedBuff;

@@ -9,7 +9,6 @@ using UnityEngine;
 
 namespace SkillsPlusPlus.Modifiers
 {
-
     [SkillLevelModifier("TreebotBodyFireSyringe", typeof(FireSyringe))]
     internal class TreebotSyringeSkillModifier : SimpleSkillModifier<FireSyringe>
     {
@@ -159,29 +158,24 @@ namespace SkillsPlusPlus.Modifiers
     {
         private static float baseBlastRadius = 0f;
         private static float baseDamageCoefficient = 0f;
-        private static SkillUpgradeHelper.SkillUpgrades seedSkill;
+
         public override void OnSkillEnter(TreebotFireFruitSeed skillState, int level)
         {
-            if (skillState is TreebotFireFruitSeed)
+            if (Mathf.Abs(baseDamageCoefficient) < 0.01f)
             {
-                TreebotFireFruitSeed skill = (TreebotFireFruitSeed)skillState;
+                baseDamageCoefficient = skillState.damageCoefficient;
 
-                if (Mathf.Abs(baseDamageCoefficient) < 0.01f)
+                if (skillState.projectilePrefab.TryGetComponent(out ProjectileImpactExplosion explosionBase))
                 {
-                    baseDamageCoefficient = skill.damageCoefficient;
-
-                    if (skill.projectilePrefab.TryGetComponent(out ProjectileImpactExplosion explosionBase))
-                    {
-                        baseBlastRadius = explosionBase.blastRadius;
-                    }
+                    baseBlastRadius = explosionBase.blastRadius;
                 }
+            }
 
-                skill.damageCoefficient = MultScaling(baseDamageCoefficient, 0.20f, level);
+            skillState.damageCoefficient = MultScaling(baseDamageCoefficient, 0.20f, level);
 
-                if (((TreebotFireFruitSeed)skillState).projectilePrefab.TryGetComponent(out ProjectileImpactExplosion projectileImpactExplosion))
-                {
-                    projectileImpactExplosion.blastRadius = MultScaling(baseBlastRadius, 0.10f, level);
-                }
+            if (skillState.projectilePrefab.TryGetComponent(out ProjectileImpactExplosion projectileImpactExplosion))
+            {
+                projectileImpactExplosion.blastRadius = MultScaling(baseBlastRadius, 0.10f, level);
             }
 
             base.OnSkillEnter(skillState, level);
@@ -190,38 +184,19 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-
-            if (seedSkill == null)
-            {
-                seedSkill = registeredSkill;
-            }
         }
 
-        public static void HealthComponent_TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo di)
+        public override void TakeDamage(int level, HealthComponent self, DamageInfo di, CharacterBody attackerBody)
         {
-            if (seedSkill != null)
+            if (attackerBody.HasBuff(RoR2Content.Buffs.Fruiting))
             {
-                if (di.attacker != null && self != null)
-                {
-                    CharacterBody body = self.GetComponent<CharacterBody>();
-                    if (body != null)
-                    {
-                        if (body.HasBuff(RoR2Content.Buffs.Fruiting))
-                        {
-                            di.attacker.GetComponent<CharacterBody>().healthComponent.Heal(seedSkill.skillLevel * 0.01f * di.damage, default(ProcChainMask), true);
-                        }
-                    }
-                }
+                di.attacker.GetComponent<CharacterBody>().healthComponent.Heal(level * 0.01f * di.damage, default(ProcChainMask), true);
             }
-
-            orig.Invoke(self, di);
         }
 
         public override void SetupSkill()
         {
             base.SetupSkill();
-
-            On.RoR2.HealthComponent.TakeDamage += HealthComponent_TakeDamage;
         }
     }
 }

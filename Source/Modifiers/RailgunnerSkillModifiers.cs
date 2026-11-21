@@ -319,8 +319,7 @@ namespace SkillsPlusPlus.Modifiers
         {
             RegisterFeatherFallBuff();
 
-            On.RoR2.HealthComponent.TakeDamage += new On.RoR2.HealthComponent.hook_TakeDamage(RailgunnerConcussiveMineSkillModifier.HealthComponent_TakeDamage);
-            On.RoR2.CharacterBody.FixedUpdate += new On.RoR2.CharacterBody.hook_FixedUpdate(RailgunnerConcussiveMineSkillModifier.CharacterBody_FixedUpdate);
+            On.RoR2.CharacterBody.FixedUpdate += CharacterBody_FixedUpdate;
 
             base.SetupSkill();
         }
@@ -456,18 +455,16 @@ namespace SkillsPlusPlus.Modifiers
         {
             RegisterTimePressureDebuff();
 
-            On.RoR2.HealthComponent.TakeDamage += new On.RoR2.HealthComponent.hook_TakeDamage(HealthComponent_TakeDamage);
 
             base.SetupSkill();
         }
 
-        public static void HealthComponent_TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo di)
+        public override void TakeDamage(int level, HealthComponent self, DamageInfo di, CharacterBody attackerBody)
         {
             if (self.body.HasBuff(TimePressureDebuff))
             {
                 di.damage = MultScaling(di.damage, 0.1f, PolarMineSkill.skillLevel);
             }
-            orig(self, di);
         }
 
         public void RegisterTimePressureDebuff()
@@ -632,27 +629,23 @@ namespace SkillsPlusPlus.Modifiers
             FrostfireIndex = DotAPI.RegisterDotDef(dotDef);
         }
 
-        public static void HealthComponent_TakeDamage(On.RoR2.HealthComponent.orig_TakeDamage orig, HealthComponent self, DamageInfo di)
+        public override void TakeDamage(int level, HealthComponent self, DamageInfo di, CharacterBody attackerBody)
         {
             if (bCryoActive && di.inflictor && di.inflictor.TryGetComponent(out CharacterBody body) && body == CryochargeSkill.genericSkill.characterBody)
             {
-                if (CryochargeSkill.skillLevel > 0)
+                if (level > 0)
                 {
                     self.body.AddTimedBuff(FrostfireBuff, 2f * CryochargeSkill.skillLevel);
                     int ignitionTanks = body.inventory.GetItemCount(DLC1Content.Items.StrengthenBurn);
                     DotController.InflictDot(self.gameObject, di.attacker, FrostfireIndex, 2f * CryochargeSkill.skillLevel, (1 + 3 * ignitionTanks), 1);
                 }
             }
-
-            orig.Invoke(self, di);
         }
 
         public override void SetupSkill()
         {
             RegisterFrostfireBuff();
-
-            On.RoR2.HealthComponent.TakeDamage += new On.RoR2.HealthComponent.hook_TakeDamage(HealthComponent_TakeDamage);
-
+            
             base.SetupSkill();
 
             RecalculateStatsAPI.GetStatCoefficients += RecalculateStatsAPIOnGetStatCoefficients;

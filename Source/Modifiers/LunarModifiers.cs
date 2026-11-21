@@ -14,61 +14,20 @@ namespace SkillsPlusPlus.Modifiers
 {
     internal class LunarModifiers
     {
-
-#pragma warning disable CS0649
-        private static List<String> HereticSkillsWarned = new List<string>();
-#pragma warning restore CS0649
-        public static List<String> HereticSupportedPassiveUpgrades = new List<String> { "LunarPrimaryReplacement", "LunarSecondaryReplacement", "LunarUtilityReplacement", "LunarDetonatorSpecialReplacement" };
-
-        public static void RecalculateStats_GetLunarStats(CharacterBody sender, StatHookEventArgs args)
-        {
-            if (!sender)
-            {
-                return;
-            }
-
-            if (sender.baseNameToken == "HERETIC_BODY_NAME") /*Heretic*/
-            {
-                /*SkillUpgrade[] upgrades = sender.GetComponents<SkillUpgrade>();
-
-                foreach (SkillUpgrade upgrade in upgrades)
-                {
-                    switch (upgrade.targetBaseSkillName)
-                    {
-                        case "LunarPrimaryReplacement":
-                            args.baseDamageAdd += (upgrade.skillLevel * 0.25f);
-                            break;
-                        case "LunarSecondaryReplacement":
-                            args.armorAdd += (upgrade.skillLevel * 3);
-                            break;
-                        case "LunarUtilityReplacement":
-                            args.healthMultAdd += (upgrade.skillLevel * 0.03f);
-                            break;
-                        case "LunarDetonatorSpecialReplacement":
-                            args.baseAttackSpeedAdd += (upgrade.skillLevel * 0.25f);
-                            break;
-                        default:
-                            if (!HereticSupportedPassiveUpgrades.Contains(upgrade.targetGenericSkill.name) && !HereticSkillsWarned.Contains(upgrade.targetGenericSkill.name))
-                            {
-                                Log.Warning($"Heretic Skill {upgrade.targetGenericSkill.name} found but no bonuses may have been applied. If this skill is supported by SkillsPlusPlus, please add it to LunarModifiers.HereticSupportedPassiveUpgrades!");
-                                HereticSkillsWarned.Add(upgrade.targetGenericSkill.name);
-                            }
-                            break;
-                    }
-                }*/
-            }
-        }
-
         [SkillLevelModifier(new string[] { "LunarPrimaryReplacement", "HungeringGaze" }, typeof(FireLunarNeedle))]
         internal class VisionsOfHeresySkillModifier : SimpleSkillModifier<FireLunarNeedle>
         {
-
             public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
             {
                 base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
 
                 skillDef.baseMaxStock = 12 + (2 * level);
                 FireLunarNeedle.damageCoefficient = MultScaling(0.05f, 0.2f, level);
+            }
+
+            public override void RecalcStats(int level, CharacterBody sender, StatHookEventArgs args)
+            {
+                args.baseDamageAdd += (level * 0.25f);
             }
 
             public override void SetupSkill()
@@ -121,6 +80,11 @@ namespace SkillsPlusPlus.Modifiers
                 }
             }
 
+            public override void RecalcStats(int level, CharacterBody sender, StatHookEventArgs args)
+            {
+                args.armorAdd += (level * 3);
+            }
+
             public override void SetupSkill()
             {
                 base.SetupSkill();
@@ -130,13 +94,17 @@ namespace SkillsPlusPlus.Modifiers
         [SkillLevelModifier(new string[] { "LunarUtilityReplacement", "Shadowfade" }, typeof(GhostUtilitySkillState))]
         internal class StridesOfHeresySkillModifier : SimpleSkillModifier<GhostUtilitySkillState>
         {
-
             public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
             {
                 base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
 
                 GhostUtilitySkillState.moveSpeedCoefficient = MultScaling(1.3f, 0.1f, level); // +10% 
                 GhostUtilitySkillState.healFrequency = MultScaling(5, 0.15f, level); // +15%
+            }
+            
+            public override void RecalcStats(int level, CharacterBody sender, StatHookEventArgs args)
+            {
+                args.healthMultAdd += (level * 0.03f);
             }
 
             public override void SetupSkill()
@@ -162,6 +130,11 @@ namespace SkillsPlusPlus.Modifiers
                 }
 
                 Detonate.baseDamageCoefficient = MultScaling(baseDamageCoefficient, 0.2f, level);
+            }
+            
+            public override void RecalcStats(int level, CharacterBody sender, StatHookEventArgs args)
+            {
+                args.baseAttackSpeedAdd += (level * 0.25f);
             }
 
             public override void OnSkillEnter(BaseState skillState, int level)

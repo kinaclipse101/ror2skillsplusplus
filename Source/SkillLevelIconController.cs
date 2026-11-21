@@ -127,12 +127,11 @@ namespace SkillsPlusPlus
 
         private void OnEnable()
         {
-            if (skillIcon)
+            if (!skillIcon) return;
+            
+            if (skillIcon.targetSkill)  //Prevents errors when morphing to Heretic
             {
-                if (skillIcon.targetSkill)  //Prevents errors when morphing to Heretic
-                {
-                    skillUpgrades = SkillUpgradeHelper.instance.GetAddMasterSkillUpgrade(skillIcon.playerCharacterMasterController.master, skillIcon.targetSkill);
-                }
+                skillUpgrades = SkillUpgradeHelper.GetOrAddMasterSkillUpgrade(skillIcon.playerCharacterMasterController.master, skillIcon.targetSkill);
             }
         }
 
@@ -141,7 +140,7 @@ namespace SkillsPlusPlus
             if (skillUpgrades != null)
             {
                 var canBuySkill = skillUpgrades.CanUpgradeSkill();
-                if (levelTextMesh != null)
+                if (levelTextMesh)
                 {
                     levelTextMesh.text = skillUpgrades.skillLevel > 0 && skillIcon.targetSkill ? skillUpgrades.skillLevel.ToString() : null;
                 }
@@ -177,7 +176,7 @@ namespace SkillsPlusPlus
             else
             {
                 Log.Debug("skill upgrades null");
-                //skillUpgrades = SkillUpgradeHelper.instance.GetAddMasterSkillUpgrade(skillIcon.playerCharacterMasterController.master, skillIcon.targetSkill);
+                //skillUpgrades = SkillUpgradeHelper.GetOrAddMasterSkillUpgrade(skillIcon.playerCharacterMasterController.master, skillIcon.targetSkill);
             }
         }
 

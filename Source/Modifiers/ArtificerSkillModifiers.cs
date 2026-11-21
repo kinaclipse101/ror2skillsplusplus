@@ -10,7 +10,7 @@ using UnityEngine;
 namespace SkillsPlusPlus.Modifiers
 {
 
-    [SkillLevelModifier("MageBodyFireFirebolt", typeof(FireFireBolt))]
+    [SkillLevelModifier("MAGE_PRIMARY_FIRE_NAME", typeof(FireFireBolt))]
     internal class ArtificerFireBoltSkillModifier : SimpleSkillModifier<FireFireBolt>
     {
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
@@ -23,8 +23,8 @@ namespace SkillsPlusPlus.Modifiers
         }
 
     }
-
-    [SkillLevelModifier("MageBodyFireLightningBolt", typeof(FireLightningBolt))]
+    
+    [SkillLevelModifier("MAGE_PRIMARY_LIGHTNING_NAME", typeof(FireLightningBolt))]
     internal class ArtificerLightningBoltSkillModifier : SimpleSkillModifier<FireLightningBolt>
     {
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
@@ -38,7 +38,7 @@ namespace SkillsPlusPlus.Modifiers
 
     }
 
-    [SkillLevelModifier("MageBodyNovaBomb", typeof(ChargeNovabomb), typeof(ThrowNovabomb))]
+    [SkillLevelModifier("MAGE_SECONDARY_LIGHTNING_NAME", typeof(ChargeNovabomb), typeof(ThrowNovabomb))]
     internal class MageNovaBombSkillModifier : BaseSkillModifier
     {
         public override void OnSkillEnter(BaseState skillState, int level)
@@ -69,7 +69,7 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("MageBodyIceBomb", typeof(ChargeIcebomb), typeof(ThrowIcebomb))]
+    [SkillLevelModifier("MAGE_SECONDARY_ICE_NAME", typeof(ChargeIcebomb), typeof(ThrowIcebomb))]
     internal class MageIceBombSkillModifier : BaseSkillModifier
     {
 
@@ -90,7 +90,7 @@ namespace SkillsPlusPlus.Modifiers
 
     }
 
-    [SkillLevelModifier("MageBodyWall", typeof(PrepWall))]
+    [SkillLevelModifier("MAGE_UTILITY_ICE_NAME", typeof(PrepWall))]
     internal class MageWallSkillModifier : SimpleSkillModifier<PrepWall>
     {
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
@@ -108,6 +108,7 @@ namespace SkillsPlusPlus.Modifiers
                 projectileMageFirewallWalkerController.totalProjectiles = AdditiveScaling(6, 1, level);
                 Log.Debug($"projectileMageFirewallWalkerController.totalProjectiles: {projectileMageFirewallWalkerController.totalProjectiles}");
                 // this just like ,.., doesnt update the ones not newly added ?? for no reason ???? ive spent like 4 days rethinking this over just gonna remove it ,.,
+                // note for phreel if youre reading :plead: um this turned out to be a vfx pooling issue but i dont really know how to fix it still so um ,.,.
                 /*if (projectileMageFirewallWalkerController.firePillarPrefab.TryGetComponent(out ProjectileImpactExplosion projectileImpactExplosion))
                 {
                     projectileImpactExplosion.lifetime = AdditiveScaling(8, 8f * 0.15f, level);
@@ -138,7 +139,7 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier(new[] { "MageBodyFlamethrower", "Dragon's Breath" }, typeof(Flamethrower))]
+    [SkillLevelModifier("MAGE_SPECIAL_FIRE_NAME", typeof(Flamethrower))]
     internal class MageFlamethrowerSkillModifier : SimpleSkillModifier<Flamethrower>
     {
         private float baseRadius = 2f;
@@ -169,7 +170,7 @@ namespace SkillsPlusPlus.Modifiers
 
     }
 
-    [SkillLevelModifier(new[] { "MageBodyFlyUp", "Antimatter Surge" }, typeof(FlyUpState))]
+    [SkillLevelModifier("MAGE_SPECIAL_LIGHTNING_NAME", typeof(FlyUpState))]
     internal class MageFlyUpSkillModifier : SimpleSkillModifier<FlyUpState>
     {
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)

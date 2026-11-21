@@ -18,10 +18,6 @@ namespace SkillsPlusPlus.Modifiers
         private float originalDuration = 0;
         private float originalRecoil = 0;
         private float originalSpread = 0;
-        public override void OnSkillEnter(FirePistol2 skillState, int level)
-        {
-            base.OnSkillEnter(skillState, level);
-        }
 
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
@@ -48,15 +44,12 @@ namespace SkillsPlusPlus.Modifiers
         public override void OnSkillEnter(FireFMJ skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
-            Log.Debug($"recoilAmplitude: {skillState.recoilAmplitude}, damageCoefficient: {skillState.damageCoefficient}");
             skillState.projectilePrefab.transform.localScale = new Vector3(2.90f, 2.19f, 3.86f) * AdditiveScaling(1, 0.2f, level);
             if (skillState.projectilePrefab.TryGetComponent(out ProjectileSimple projectileSimple))
             {
                 if (Mathf.Abs(originalForwardSpeed) < 0.01f)
                 {
-#pragma warning disable CS0104, 104
                     originalForwardSpeed = projectileSimple.desiredForwardSpeed;
-#pragma warning restore CS0104, 104
                 }
 
                 projectileSimple.desiredForwardSpeed = MultScaling(originalForwardSpeed, 0.3f, level);
@@ -70,7 +63,6 @@ namespace SkillsPlusPlus.Modifiers
     [SkillLevelModifier("CommandoBodyFireShotgunBlast", typeof(FireShotgunBlast))]
     internal class CommandoShotgunBlastSkillModifier : SimpleSkillModifier<FireShotgunBlast>
     {
-
         public override void OnSkillEnter(FireShotgunBlast skillState, int level)
         {
             base.OnSkillEnter(skillState, level);

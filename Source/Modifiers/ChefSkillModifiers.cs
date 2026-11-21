@@ -10,7 +10,6 @@ using MonoMod.Cil;
 using R2API;
 using RoR2;
 using RoR2.Projectile;
-using RoR2.Skills;
 using SkillsPlusPlus.Modifiers;
 using UnityEngine.AddressableAssets;
 using static R2API.RecalculateStatsAPI;
@@ -20,16 +19,9 @@ using OpCodes = Mono.Cecil.Cil.OpCodes;
 
 namespace SkillsPlusPlus.Source.Modifiers
 {
-    [SkillLevelModifier(new[] { "ChefDice", "ChefDiceBoosted" }, typeof(Dice))]
+    [SkillLevelModifier("CHEF_PRIMARY_NAME", typeof(Dice))]
     class ChefDiceSkillModifier : BaseSkillModifier
     {
-        private int locallevel;
-
-        public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
-        {
-            base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-        }
-
         public override void SetupSkill()
         {
             base.SetupSkill();
@@ -53,36 +45,17 @@ namespace SkillsPlusPlus.Source.Modifiers
                 c.Emit(OpCodes.Ldloc_2); //load array 
                 c.Emit(OpCodes.Pop); //kill array
                 c.Emit(OpCodes.Ldarg_0);
-                c.EmitDelegate<Func<EntityStates.Chef.Dice, int[]>>((cleaverProjectile) =>
+                c.EmitDelegate<Func<Dice, int[]>>((cleaverProjectile) =>
                     {
-                        int level = 0;
-                        int[] ChargedDiceArray = { 8, 4, 4 }; 
+                        int[] ChargedDiceArray = [8, 4, 4]; 
                         Log.Debug("1");
-                        /*var skillUpgrades = cleaverProjectile.chefController.characterBody.gameObject.GetComponents<SkillUpgrade>();
+                        int skillLevel = GetSkillLevel(cleaverProjectile.chefController.characterBody);
                         Log.Debug("2");
-                        if (skillUpgrades != null)
-                        {
-                            foreach (var upgrade in skillUpgrades)
-                            {
-                                if (upgrade.targetBaseSkillName != null)
-                                {
-                                    if (upgrade.targetBaseSkillName == "ChefDiceBoosted")
-                                    {
-                                        level = upgrade.skillLevel;
-                                    }
-                                }
-                            }
                         
-                            Log.Debug("2");
-                            ChargedDiceArray[0] = 8 + level * 2;
-                            ChargedDiceArray[1] = 4 + level;
-                            ChargedDiceArray[2] = 4 + level;
-                        }
-                        else
-                        {
-                            Log.Debug("ooough ,.,.,.,. null skillupgrades .,.,., shouldnt hapen .,.,.");
-                        }*/
-                        
+                        Log.Debug("2");
+                        ChargedDiceArray[0] = 8 + skillLevel * 2;
+                        ChargedDiceArray[1] = 4 + skillLevel;
+                        ChargedDiceArray[2] = 4 + skillLevel;
                         
                         return ChargedDiceArray;
                     }
@@ -102,7 +75,7 @@ namespace SkillsPlusPlus.Source.Modifiers
             if (!self.charged) // add a boosted check here too 
             {
                 //increase projectile size of returning dices by 30%
-                self.projectileOverlapAttack.transform.localScale *= AdditiveScaling(1, .3f, locallevel);
+                self.projectileOverlapAttack.transform.localScale *= AdditiveScaling(1, .3f, GetSkillLevel(self.projectileController.owner));
             } 
 
             orig(self);
@@ -111,25 +84,24 @@ namespace SkillsPlusPlus.Source.Modifiers
         public override void OnSkillEnter(BaseState skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
-            if (skillState is Dice dice)
-            {
-                Log.Debug("Dice");
-                Log.Debug($"charge time be4 {dice.cleaverController.holdChargeTime}");
-                Log.Debug($"charge damage coeff {dice.cleaverController.chargedDamageCoefficient}");
-                Log.Debug($"prjectile damage  {dice.damageCoefficient}");
-                Log.Debug($"boost prjectile damage  {dice.boostedDamageCoefficient}"); // this is in cleaverprojectile.chargeddamagecoeff i think ?
-                Log.Debug($"travel distance {dice.cleaverController.maxTravelDistance}");
 
-                level += dice.characterBody.GetBuffCount(YesChefSkillModifier.levelupBuff);
-                locallevel = level;
+            if (skillState is not Dice dice) return;
+            
+            Log.Debug("Dice");
+            Log.Debug($"charge time be4 {dice.cleaverController.holdChargeTime}");
+            Log.Debug($"charge damage coeff {dice.cleaverController.chargedDamageCoefficient}");
+            Log.Debug($"prjectile damage  {dice.damageCoefficient}");
+            Log.Debug($"boost prjectile damage  {dice.boostedDamageCoefficient}"); // this is in cleaverprojectile.chargeddamagecoeff i think ?
+            Log.Debug($"travel distance {dice.cleaverController.maxTravelDistance}");
+
+            level += dice.characterBody.GetBuffCount(YesChefSkillModifier.levelupBuff);
                 
-                dice.cleaverController.maxTravelDistance = AdditiveScaling(55f, 10f, level); //base 55
-                dice.damageCoefficient = AdditiveScaling(2f, .5f, level); // base 2 (200% dmg)
-                dice.boostedDamageCoefficient = AdditiveScaling(4f, .5f, level); // base 4 (400% dmg)
+            dice.cleaverController.maxTravelDistance = AdditiveScaling(55f, 10f, level); //base 55
+            dice.damageCoefficient = AdditiveScaling(2f, .5f, level); // base 2 (200% dmg)
+            dice.boostedDamageCoefficient = AdditiveScaling(4f, .5f, level); // base 4 (400% dmg)
 
-                Log.Debug($"travel distance after {dice.cleaverController.maxTravelDistance}");
-                Log.Debug($"damage after {dice.damageCoefficient}");
-            }
+            Log.Debug($"travel distance after {dice.cleaverController.maxTravelDistance}");
+            Log.Debug($"damage after {dice.damageCoefficient}");
         }
 
         public override void OnSkillExit(BaseState skillState, int level)
@@ -140,51 +112,41 @@ namespace SkillsPlusPlus.Source.Modifiers
         }
     }
 
-
-
-    [SkillLevelModifier( new[] {"ChefSear", "ChefSearBoosted"}, typeof(Sear))]
+    [SkillLevelModifier("CHEF_SECONDARY_NAME", typeof(Sear))]
     class ChefSearSkillModifier : BaseSkillModifier
     {
-        //heal on ignites, attack faster, damage
-        //boosted add extra oil globs and 
         public static BuffDef ChefAttackSpeedBuff;
 
-        private DamageTypeCombo SearDamageTypeCombo = new DamageTypeCombo(DamageType.IgniteOnHit, DamageTypeExtended.ChefSource, DamageSource.Secondary);
+        private DamageTypeCombo SearDamageTypeCombo = new(DamageType.IgniteOnHit, DamageTypeExtended.ChefSource, DamageSource.Secondary);
         
-        private DamageTypeCombo BoostedSearDamageTypeCombo = new DamageTypeCombo(DamageType.IgniteOnHit, DamageTypeExtended.ChefSource | DamageTypeExtended.IgniteChefOilBoosted, DamageSource.Secondary);
-        
-        public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
-        {
-            base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-        }
+        private DamageTypeCombo BoostedSearDamageTypeCombo = new(DamageType.IgniteOnHit, DamageTypeExtended.ChefSource | DamageTypeExtended.IgniteChefOilBoosted, DamageSource.Secondary);
 
         public override void OnSkillEnter(BaseState skillState, int level)
         {
-            base.OnSkillEnter(skillState, level); 
+            base.OnSkillEnter(skillState, level);
 
-            if (skillState is Sear sear)
+            if (skillState is not Sear sear) return;
+            
+            Log.Debug($"Sear {sear.tickDamageCoefficient}");
+            Log.Debug($"Sear {sear.damageStat}");
+            Log.Debug($"Sear {sear.boostedDamage}");
+            //Logger.Debug($"Sear {sear.dams}");
+            Log.Debug($"Sear {sear.tickDamageCoefficient}");
+                
+            level += sear.characterBody.GetBuffCount(YesChefSkillModifier.levelupBuff);
+                
+            sear.characterBody.SetBuffCount(ChefAttackSpeedBuff.buffIndex, level);
+            sear.characterBody.RecalculateStats();
+                
+            sear.chefController = sear.GetComponent<ChefController>();
+            if (sear.chefController.isInYesChef)
             {
-                Log.Debug($"Sear {sear.tickDamageCoefficient}");
-                Log.Debug($"Sear {sear.damageStat}");
-                Log.Debug($"Sear {sear.boostedDamage}");
-                //Logger.Debug($"Sear {sear.dams}");
-                Log.Debug($"Sear {sear.tickDamageCoefficient}");
-                
-                level += sear.characterBody.GetBuffCount(YesChefSkillModifier.levelupBuff);
-                
-                sear.characterBody.SetBuffCount(ChefAttackSpeedBuff.buffIndex, level);
-                sear.characterBody.RecalculateStats();
-                
-                sear.chefController = sear.GetComponent<ChefController>();
-                if (sear.chefController.isInYesChef)
-                {
-                    sear.boostedProjectilesFired = level * -1;
-                    Log.Debug($"hasboost {sear.chefController.isInYesChef}");
-                }
-                else
-                {
-                    Log.Debug("chefcontroller inull ");
-                }
+                sear.boostedProjectilesFired = level * -1;
+                Log.Debug($"hasboost {sear.chefController.isInYesChef}");
+            }
+            else
+            {
+                Log.Debug("chefcontroller inull ");
             }
         }
 
@@ -193,25 +155,19 @@ namespace SkillsPlusPlus.Source.Modifiers
             base.SetupSkill();
 
             RegisterChefAttackSpeedBuff();
-            GetStatCoefficients += RecalculateStatsAPIOnGetStatCoefficients;
-            HealthComponent.TakeDamage += HealthComponentOnTakeDamage;
         }
 
-        private void HealthComponentOnTakeDamage(HealthComponent.orig_TakeDamage orig, RoR2.HealthComponent self, DamageInfo damageInfo)
+        public override void TakeDamagePost(int level, RoR2.HealthComponent self, DamageInfo damageInfo, CharacterBody attackerBody)
         {
-            orig(self, damageInfo);
-
             var damagetypecheck = (damageInfo.damageType == SearDamageTypeCombo || damageInfo.damageType == BoostedSearDamageTypeCombo);
             if (!damagetypecheck) return; // no clue if this actually does anything "preformance" wise since its mostly here to prevent it from calling getcomponent every take damage ,..,,.
             
-            var surv = damageInfo.attacker?.GetComponent<CharacterBody>();
-            if (surv != null && surv.GetBuffCount(ChefAttackSpeedBuff) > 0)
+            if (attackerBody.GetBuffCount(ChefAttackSpeedBuff) > 0)
             {
                 Log.Debug(damageInfo.damageType);
                 
-                surv.healthComponent.Heal(surv.healthComponent.fullHealth * 0.005f * surv.GetBuffCount(ChefAttackSpeedBuff), default);
+                attackerBody.healthComponent.Heal(attackerBody.healthComponent.fullHealth * 0.005f * attackerBody.GetBuffCount(ChefAttackSpeedBuff), default);
             }
-            
         }
 
         public void RegisterChefAttackSpeedBuff()
@@ -229,10 +185,9 @@ namespace SkillsPlusPlus.Source.Modifiers
             ContentAddition.AddBuffDef(buffDef);
         }
 
-        private void RecalculateStatsAPIOnGetStatCoefficients(CharacterBody sender, StatHookEventArgs args)
+        public override void RecalcStats(int level, CharacterBody sender, StatHookEventArgs args)
         {
             var buffcount = sender.GetBuffCount(ChefAttackSpeedBuff);
-            
             if (buffcount > 0)
             {
                 args.attackSpeedMultAdd += .25f * buffcount;
@@ -254,16 +209,9 @@ namespace SkillsPlusPlus.Source.Modifiers
         }
     }
 
-    [SkillLevelModifier(new[] {"ChefRolyPoly", "ChefRolyPolyBoosted"}, typeof(RolyPoly), typeof(RolyPolyWeaponBlockingState),
-        typeof(RolyPolyBoostedProjectileTimer))]
+    [SkillLevelModifier("CHEF_UTILITY_NAME", typeof(RolyPoly), typeof(RolyPolyWeaponBlockingState), typeof(RolyPolyBoostedProjectileTimer))]
     class ChefRolyPolySkillModifier : BaseSkillModifier
     {
-        //maybe make last longer + faster charge ?
-        public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
-        {
-            base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-        }
-
         public override void OnSkillEnter(BaseState skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
@@ -296,7 +244,6 @@ namespace SkillsPlusPlus.Source.Modifiers
                     Log.Debug("chefcontroller inull ");
                 }
                 
-                
                 //rolypoly.gearToChargeProgress *= AdditiveScaling(1, -0.1f, level);
                 Log.Debug($"speedMultiplier {rolypoly.speedMultiplier}");
                 Log.Debug($"baseDuration {rolypoly.baseDuration}");
@@ -313,22 +260,14 @@ namespace SkillsPlusPlus.Source.Modifiers
         {
             base.OnSkillExit(skillState, level);
             
-            if (skillState is RolyPoly rolypoly)
-            {
-                skillState.characterBody.SetBuffCount(YesChefSkillModifier.levelupBuff.buffIndex, 0);
-            }
+            skillState.characterBody.SetBuffCount(YesChefSkillModifier.levelupBuff.buffIndex, 0);
+            skillState.characterBody.SetBuffCount(ChefSearSkillModifier.ChefAttackSpeedBuff.buffIndex, 0);
         }
     }
 
-    [SkillLevelModifier("ChefGlaze", typeof(Glaze))]
+    [SkillLevelModifier("CHEF_SPECIAL_NAME", typeof(Glaze))]
     class ChefGlazeSkillModifier : BaseSkillModifier
     {
-
-        public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
-        {
-            base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-        }
-
         public override void OnSkillEnter(BaseState skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
@@ -347,38 +286,27 @@ namespace SkillsPlusPlus.Source.Modifiers
         }
     }
 
-    [SkillLevelModifier("YesChef", typeof(YesChef))]
+    [SkillLevelModifier("CHEF_SPECIAL_ALT1_NAME", typeof(YesChef))]
     class YesChefSkillModifier : BaseSkillModifier
     {
         public static BuffDef levelupBuff;
-
-        public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
-        {
-            base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-        }
 
         public override void OnSkillEnter(BaseState skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
 
-            if (skillState is YesChef yessir)
-            {
-                Log.Debug("YesChef");
-                yessir.characterBody.SetBuffCount(levelupBuff.buffIndex, level);
-            }
+            Log.Debug("YesChef");
+            skillState.characterBody.SetBuffCount(levelupBuff.buffIndex, level);
         }
 
         public override void OnSkillExit(BaseState skillState, int level)
         {
             base.OnSkillExit(skillState, level);
-            
-            if (skillState is YesChef yessir)
+
+            Log.Debug("YesChef");
+            if (skillState.characterBody.HasBuff(levelupBuff))
             {
-                Log.Debug("YesChef");
-                if (yessir.characterBody.HasBuff(levelupBuff))
-                {
-                    yessir.characterBody.SetBuffCount(levelupBuff.buffIndex, 0);
-                }
+                skillState.characterBody.SetBuffCount(levelupBuff.buffIndex, 0);
             }
         }
 
@@ -405,7 +333,7 @@ namespace SkillsPlusPlus.Source.Modifiers
         }
     }
     
-    [SkillLevelModifier(new[] {"ChefOilSpill", "ChefOilSpillBoosted"}, typeof(OilSpillBase), typeof(OilSpillV1), typeof(OilSpillV2))]
+    [SkillLevelModifier("CHEF_UTILITY_ALT_NAME", typeof(OilSpillBase), typeof(OilSpillV1), typeof(OilSpillV2))]
     class ChefOilSpillSkillModifier : BaseSkillModifier
     {
         public override void SetupSkill()
@@ -422,31 +350,16 @@ namespace SkillsPlusPlus.Source.Modifiers
             orig(self);
             self.gameObject.GetComponent<ProjectileController>().onInitialized += controller =>
             {
-                /*var skills = controller.owner?.GetComponents<SkillUpgrade>();
-                if (skills != null)
-                {
-                    Log.Debug(skills);
-                    foreach (var skillUpgrade in skills)
-                    {
-                        Log.Debug(skillUpgrade.targetBaseSkillName);
-                        if (!skillUpgrade.targetBaseSkillName.Contains("ChefOilSpill")) continue;
-
-                        self.gasolineBlastDamage = MultScaling(self.gasolineBlastDamage, 1.3f, skillUpgrade.skillLevel);
-                        self.gasolineRadius = MultScaling(self.gasolineRadius, 1.3f, skillUpgrade.skillLevel);
-                    }
-                }*/
+                int skillLevel = GetSkillLevel(self.projectileController.owner);
+                self.gasolineBlastDamage = MultScaling(self.gasolineBlastDamage, 1.3f, skillLevel);
+                self.gasolineRadius = MultScaling(self.gasolineRadius, 1.3f, skillLevel);
             };
         }
 
         private Sprite ChefOilSpillSkillDefOnGetCurrentIcon(ChefOilSpillSkillDef.orig_GetCurrentIcon orig, RoR2.Skills.ChefOilSpillSkillDef self, GenericSkill skillSlot)
         {
             var origpsrite = orig(self, skillSlot);
-            return origpsrite == null ? self.icons[0] : origpsrite;
-        }
-
-        public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
-        {
-            base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
+            return !origpsrite ? self.icons[0] : origpsrite;
         }
 
         public override void OnSkillEnter(BaseState skillState, int level)
@@ -488,15 +401,9 @@ namespace SkillsPlusPlus.Source.Modifiers
         }
     }
     
-    [SkillLevelModifier(new[] {"ChefIceBox", "ChefIceBoxBoosted"}, typeof(IceBox))]
+    [SkillLevelModifier("CHEF_SECONDARY_ALT_NAME", typeof(IceBox))]
     class ChefIceBoxSkillModifier : BaseSkillModifier
     {
-
-        public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
-        {
-            base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-        }
-
         public override void OnSkillEnter(BaseState skillState, int level)
         {
             base.OnSkillEnter(skillState, level);

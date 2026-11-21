@@ -4,14 +4,12 @@ using RoR2.Skills;
 
 namespace SkillsPlusPlus.Modifiers
 {
-
     /// <summary>
     /// A simple implementation of the <see cref="BaseSkillModifier"/> that is designed for character skills that have a single entity state
     /// </summary>
     /// <typeparam name="SkillState">The single <see cref="EntityStates.BaseState"/> this skill is coupled with</typeparam>
     public abstract class SimpleSkillModifier<SkillState> : BaseSkillModifier where SkillState : BaseState
     {
-
         /// <inheritdoc/>
         public sealed override void OnSkillEnter(BaseState skillState, int level)
         {

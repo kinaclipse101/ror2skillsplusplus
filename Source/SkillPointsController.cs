@@ -89,7 +89,7 @@ namespace SkillsPlusPlus
             // attempt to transfer and apply skill levels
             foreach (GenericSkill genericSkill in body.GetComponents<GenericSkill>())
             {
-                SkillUpgradeHelper.SkillUpgrades returnVal = SkillUpgradeHelper.instance.GetAddMasterSkillUpgrade(playerCharacterMasterController.master, genericSkill);
+                SkillUpgradeHelper.SkillUpgrades returnVal = SkillUpgradeHelper.GetOrAddMasterSkillUpgrade(playerCharacterMasterController.master, genericSkill);
                 Log.Debug($"attempting to add master skill upgrade !! {returnVal}");
                 returnVal.RefreshUpgrades();
                 returnVal.genericSkill = genericSkill;
@@ -182,24 +182,24 @@ namespace SkillsPlusPlus
             {
                 foreach (GenericSkill genericSkill in body.GetComponents<GenericSkill>())
                 {
-                    SkillUpgradeHelper.SkillUpgrades returnVal = SkillUpgradeHelper.instance.GetAddMasterSkillUpgrade(playerCharacterMasterController.master, genericSkill);
+                    SkillUpgradeHelper.SkillUpgrades returnVal = SkillUpgradeHelper.GetOrAddMasterSkillUpgrade(playerCharacterMasterController.master, genericSkill);
                     returnVal.RefreshUpgrades();
-                    Log.Debug($"refreshed skill {returnVal.skillName}");
+                    Log.Debug($"refreshed skill {returnVal.skillNameToken}");
                     //skillUpgrade.targetGenericSkill = genericSkill;
                 }
                 Log.Debug($"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-                foreach (List<SkillUpgradeHelper.SkillUpgrades> genericSkill in SkillUpgradeHelper.instance.masterSkills.Values)
+                foreach (List<SkillUpgradeHelper.SkillUpgrades> genericSkill in SkillUpgradeHelper.masterSkills.Values)
                 {
                     foreach (SkillUpgradeHelper.SkillUpgrades skillUpgrades in genericSkill)
                     {
-                        Log.Debug(skillUpgrades.skillName);
+                        Log.Debug(skillUpgrades.skillNameToken);
                     }
                 }
             }
             
             if (Input.GetKeyDown(KeyCode.LeftBracket) && this.PlayerTeamIndex != TeamIndex.None)
             {
-                SkillUpgradeHelper.instance.masterSkills =
+                SkillUpgradeHelper.masterSkills =
                     new Dictionary<CharacterMaster, List<SkillUpgradeHelper.SkillUpgrades>>();
                 Log.Debug("cleared ");
             }
@@ -256,8 +256,8 @@ namespace SkillsPlusPlus
             
             DeductSkillPoints(1);
             skillUpgrades.skillLevel += 1;
-            SkillUpgradeHelper.instance.GetAddMasterSkillUpgrade(playerCharacterMasterController.master, skillUpgrades.genericSkill, skillUpgrades.skillLevel);
-            Log.Debug($"CmdOnBuySkill({skillUpgrades.skillName}): skillLevel: {skillUpgrades.skillLevel}");
+            SkillUpgradeHelper.GetOrAddMasterSkillUpgrade(playerCharacterMasterController.master, skillUpgrades.genericSkill, skillUpgrades.skillLevel);
+            Log.Debug($"CmdOnBuySkill({skillUpgrades.skillNameToken}): skillLevel: {skillUpgrades.skillLevel}");
 
 
             //skillUpgrade.RefreshUpgrades();

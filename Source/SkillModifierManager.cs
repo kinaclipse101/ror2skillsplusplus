@@ -11,8 +11,9 @@ namespace SkillsPlusPlus
 {
     public sealed class SkillModifierManager
     {
-        private static readonly Dictionary<string, BaseSkillModifier> skillNameToModifierMap = new Dictionary<string, BaseSkillModifier>();
-        private static readonly Dictionary<Type, BaseSkillModifier> typeToModifierMap = new Dictionary<Type, BaseSkillModifier>();
+        private static readonly Dictionary<string, BaseSkillModifier> skillNameToModifierMap = new();
+        private static readonly Dictionary<Type, BaseSkillModifier> typeToModifierMap = new();
+        private static readonly List<BaseSkillModifier> allModifiers = [];
 
         /// <summary>
         /// Finds and loads all skill modifiers in the current assembly.
@@ -22,10 +23,6 @@ namespace SkillsPlusPlus
         public static void LoadSkillModifiers()
         {
             Assembly assembly = Assembly.GetCallingAssembly();
-            if (assembly == null)
-            {
-                return;
-            }
             foreach (Type type in assembly.GetTypes())
             {
                 var attributes = type.GetCustomAttributes<SkillLevelModifierAttribute>();
@@ -33,9 +30,10 @@ namespace SkillsPlusPlus
                 {
                     continue;
                 }
+                
                 try
                 {
-                    ConstructorInfo constructorInfo = type.GetConstructor(new Type[0]);
+                    ConstructorInfo constructorInfo = type.GetConstructor([]);
                     if (constructorInfo == null)
                     {
                         Log.Debug($"Failed to find constructor info for {type.FullName}");
@@ -46,37 +44,43 @@ namespace SkillsPlusPlus
                         }
                         continue;
                     }
+                    
                     foreach (SkillLevelModifierAttribute attribute in attributes)
                     {
-                        object someSkillModifier = constructorInfo.Invoke(new object[0]);
+                        object someSkillModifier = constructorInfo.Invoke([]);
 
-                        if (someSkillModifier is BaseSkillModifier skillModifier)
+                        if (someSkillModifier is not BaseSkillModifier skillModifier) continue;
+                        
+                        skillModifier.SetupSkill();
+                        skillModifier.SetupConfig(SkillsPlugin.Instance.Config);
+
+                        skillModifier.skillNames = attribute.skillNameTokens;
+                        skillModifier.EntityStateTypes = attribute.baseStateTypes;
+                        
+                        allModifiers.Add(skillModifier);
+                        
+                        foreach (string skillName in attribute.skillNameTokens)
                         {
-                            skillModifier.SetupSkill();
-                            skillModifier.SetupConfig(SkillsPlugin.Instance.Config);
-
-                            skillModifier.skillNames = attribute.skillNames;
-                            skillModifier.EntityStateTypes = attribute.baseStateTypes;
-                            foreach (string skillName in attribute.skillNames)
+                            if (skillNameToModifierMap.TryGetValue(skillName, out BaseSkillModifier existingModifier))
                             {
-                                if (skillNameToModifierMap.TryGetValue(skillName, out BaseSkillModifier existingModifier))
-                                {
-                                    Log.Warning("Skill modifier conflict!!!");
-                                    Log.Warning($"Cannot add {someSkillModifier.GetType().FullName} since {existingModifier.GetType().FullName} already exists for skill named {skillName}");
-                                    continue;
-                                }
-                                skillNameToModifierMap[skillName] = skillModifier;
+                                Log.Warning("Skill modifier conflict!!!");
+                                Log.Warning($"Cannot add {someSkillModifier.GetType().FullName} since {existingModifier.GetType().FullName} already exists for skill named {skillName}");
+                                continue;
                             }
-                            foreach (Type stateType in attribute.baseStateTypes)
+                            
+                            skillNameToModifierMap[skillName] = skillModifier;
+                        }
+                        
+                        foreach (Type stateType in attribute.baseStateTypes)
+                        {
+                            if (typeToModifierMap.TryGetValue(stateType, out BaseSkillModifier existingModifier))
                             {
-                                if (typeToModifierMap.TryGetValue(stateType, out BaseSkillModifier existingModifier))
-                                {
-                                    Log.Warning("Skill modifier conflict!!!");
-                                    Log.Warning($"Cannot add {someSkillModifier.GetType().FullName} since {existingModifier.GetType().FullName} already exists for the entity state {stateType.FullName}");
-                                    continue;
-                                }
-                                typeToModifierMap[stateType] = skillModifier;
+                                Log.Warning("Skill modifier conflict!!!");
+                                Log.Warning($"Cannot add {someSkillModifier.GetType().FullName} since {existingModifier.GetType().FullName} already exists for the entity state {stateType.FullName}");
+                                continue;
                             }
+                            
+                            typeToModifierMap[stateType] = skillModifier;
                         }
                     }
                 }
@@ -85,69 +89,32 @@ namespace SkillsPlusPlus
                     Log.Error(error);
                     continue;
                 }
-
             }
         }
 
         internal static BaseSkillModifier GetSkillModifier(SkillDef skillDef)
         {
-            if (skillDef == null)
-            {
-                return null;
-            }
-            return GetSkillModifierByName(((ScriptableObject)skillDef)?.name);
+            return !skillDef ? null : GetSkillModifierByName(skillDef.skillNameToken);
         }
 
         internal static BaseSkillModifier GetSkillModifierByName(string skillName)
         {
-            if (skillName == null)
-            {
-                return null;
-            }
-            if (skillNameToModifierMap.TryGetValue(skillName, out BaseSkillModifier modifier))
-            {
-                return modifier;
-            }
-            return null;
+            return skillName == null ? null : skillNameToModifierMap.GetValueOrDefault(skillName);
         }
 
         internal static bool HasSkillModifier(SkillDef skillDef)
         {
-            if (skillDef == null)
-            {
-                return false;
-            }
-            return HasSkillModifier(((ScriptableObject)skillDef)?.name);
+            return skillDef != null && HasSkillModifier(((ScriptableObject)skillDef)?.name);
         }
 
         internal static bool HasSkillModifier(string baseSkillName)
         {
-            if (baseSkillName == null)
-            {
-                return false;
-            }
-            return skillNameToModifierMap.ContainsKey(baseSkillName);
+            return baseSkillName != null && skillNameToModifierMap.ContainsKey(baseSkillName);
         }
-
-        // internal static BaseSkillModifier GetSkillModifier(string skillName) {
-
-        // }
 
         internal static BaseSkillModifier GetSkillModifiersForEntityStateType(Type entityStateType)
         {
-            if (entityStateType == null)
-            {
-                return null;
-            }
-            if (typeToModifierMap.TryGetValue(entityStateType, out BaseSkillModifier modifiers))
-            {
-                return modifiers;
-            }
-            // if (entityStateType != typeof(GenericCharacterPod)) {
-            //     Logger.Debug("Could not find any ISkillModifiers for entity state {0}", entityStateType.FullName);
-            // }
-            return null;
+            return entityStateType == null ? null : typeToModifierMap.GetValueOrDefault(entityStateType);
         }
-
     }
 }

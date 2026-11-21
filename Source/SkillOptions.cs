@@ -14,7 +14,7 @@ namespace SkillsPlusPlus.Source
 {
     internal class SkillOptions
     {
-        public static ModKeybind hotkey { get; set; }
+        public static ModKeybind hotkey { get; private set; }
         public static ConfigEntry<int> levelsPerSkillPoint;
         public static ConfigEntry<bool> disableInput;
         public static ConfigEntry<bool> multScalingLinear;
@@ -25,69 +25,54 @@ namespace SkillsPlusPlus.Source
         
         public static void InitConfig()
         {
-            {
-                hotkey = RebindAPI.RegisterModKeybind(new ModKeybind(
-                    "SKILLS_GAMEPAD_BUY_BTN", 
-                    KeyCode.None, 
-                    16, 
-                    "Jump" 
-                ));
-            }
+            hotkey = RebindAPI.RegisterModKeybind(new ModKeybind(
+                "SKILLS_GAMEPAD_BUY_BTN", 
+                KeyCode.None, 
+                16, 
+                "Jump" 
+            ));
             
+            levelsPerSkillPoint = SkillsPlugin.Instance.Config.Bind("Skills++",
+                "Levels per skill point",
+                5,
+                "The number of levels to reach to be rewarded with a skillpoint. Changes will not be applied during a run. In multiplayer runs the host's setting is used");
+            ModSettingsManager.AddOption(new IntSliderOption(levelsPerSkillPoint, new IntSliderConfig
             {
-                levelsPerSkillPoint = SkillsPlugin.Instance.Config.Bind("Skills++",
-                    "Levels per skill point",
-                    5,
-                    "The number of levels to reach to be rewarded with a skillpoint. Changes will not be applied during a run. In multiplayer runs the host's setting is used");
-                ModSettingsManager.AddOption(new IntSliderOption(levelsPerSkillPoint, new IntSliderConfig
-                {
-                    max = 30,
-                    min = 1,
-                }));
-            }
-
-            {
-                disableInput = SkillsPlugin.Instance.Config.Bind("Skills++",
-                    "Disable Skills While Buying",
-                    true,
-                    "Should skills be disabled while the Buy Skills Input is pressed. (Disable this if you find yourself hitting the key by mistake)");
-                ModSettingsManager.AddOption(new CheckBoxOption(disableInput));
-            }
-
-            {
-                multScalingLinear = SkillsPlugin.Instance.Config.Bind("Skills++",
-                    "Linear Skill Multipliers",
-                    false,
-                    "Should Multiplicative (+%) skill values use a linear value rather than an exponential one. (Useful for playing with low \"Levels per skill point\" values). In multiplayer runs the host's setting is used");
-                ModSettingsManager.AddOption(new CheckBoxOption(multScalingLinear));
-            }
-
-            {
-                disabledSurvivors = SkillsPlugin.Instance.Config.Bind("Skills++",
-                    "Disabled Survivors",
-                    "",
-                    "Survivors which shouldn't recieve skill upgrades. Can be modified in-game using the \"spp_disable_survivor\" and \"spp_enable_survivor\" commands respectively.");
-                disabledSurvivors.SettingChanged += (sender, args) => { disabledSurvivorList = disabledSurvivors.Value.Split(","); };
-                disabledSurvivorList = disabledSurvivors.Value.Split(",");
-                
-                ModSettingsManager.AddOption(new StringInputFieldOption(disabledSurvivors));
-            }
+                max = 30,
+                min = 1,
+            }));
             
-            {
-                debugLogging = SkillsPlugin.Instance.Config.Bind("Skills++",
-                    "Debug Logging",
-                    false,
-                    "Enables debug logging.");
-                ModSettingsManager.AddOption(new CheckBoxOption(debugLogging));
-            }
+            disableInput = SkillsPlugin.Instance.Config.Bind("Skills++",
+                "Disable Skills While Buying",
+                true,
+                "Should skills be disabled while the Buy Skills Input is pressed. (Disable this if you find yourself hitting the key by mistake)");
+            ModSettingsManager.AddOption(new CheckBoxOption(disableInput));
             
-            {
-                deeperDebugLogging = SkillsPlugin.Instance.Config.Bind("Skills++",
-                    "More Debug Logging",
-                    false,
-                    "Enables further debug logging on more frequently called logs.");
-                ModSettingsManager.AddOption(new CheckBoxOption(deeperDebugLogging));
-            }
+            multScalingLinear = SkillsPlugin.Instance.Config.Bind("Skills++",
+                "Linear Skill Multipliers",
+                false,
+                "Should Multiplicative (+%) skill values use a linear value rather than an exponential one. (Useful for playing with low \"Levels per skill point\" values). In multiplayer runs the host's setting is used");
+            ModSettingsManager.AddOption(new CheckBoxOption(multScalingLinear));
+            
+            disabledSurvivors = SkillsPlugin.Instance.Config.Bind("Skills++",
+                "Disabled Survivors",
+                "",
+                "Survivors which shouldn't recieve skill upgrades. Can be modified in-game using the \"spp_disable_survivor\" and \"spp_enable_survivor\" commands respectively.");
+            disabledSurvivors.SettingChanged += (sender, args) => { disabledSurvivorList = disabledSurvivors.Value.Split(","); };
+            disabledSurvivorList = disabledSurvivors.Value.Split(",");
+            ModSettingsManager.AddOption(new StringInputFieldOption(disabledSurvivors));
+            
+            debugLogging = SkillsPlugin.Instance.Config.Bind("Skills++",
+                "Debug Logging",
+                false,
+                "Enables debug logging.");
+            ModSettingsManager.AddOption(new CheckBoxOption(debugLogging));
+            
+            deeperDebugLogging = SkillsPlugin.Instance.Config.Bind("Skills++",
+                "More Debug Logging",
+                false,
+                "Enables further debug logging on more frequently called logs.");
+            ModSettingsManager.AddOption(new CheckBoxOption(deeperDebugLogging));
         }
         
         [ConCommand(commandName = "spp_disable_survivor", flags = ConVarFlags.None, helpText = "spp_disable_survivor <survivor name>\n  Disables Skills++ for the named survivor.")]

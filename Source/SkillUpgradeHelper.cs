@@ -1,61 +1,121 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using EntityStates;
 using RoR2;
 using RoR2.Skills;
 using SkillsPlusPlus.Modifiers;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace SkillsPlusPlus.Source;
 
-public class SkillUpgradeHelper
+public static class SkillUpgradeHelper
 {
-    public static SkillUpgradeHelper instance = new SkillUpgradeHelper();
-    public Dictionary<CharacterMaster, List<SkillUpgrades>> masterSkills = [];
+    public static Dictionary<CharacterMaster, List<SkillUpgrades>> masterSkills = [];
 
-    public SkillUpgrades GetAddMasterSkillUpgrade(CharacterMaster characterMaster, GenericSkill genericSkill, int newLevel = -1)
+    public static SkillUpgrades GetOrAddMasterSkillUpgrade(CharacterMaster characterMaster, GenericSkill genericSkill, int newLevel = -1)
     {
-        SkillUpgrades skillUpgrade;
+        SkillUpgrades skillUpgrade = null;
         
         if (masterSkills.TryGetValue(characterMaster, out List<SkillUpgrades> skills))
         {
-            SkillUpgrades skill = skills.FirstOrDefault(skill => skill.skillName == ((ScriptableObject)genericSkill.skillDef)?.name && skill.characterMaster == characterMaster);
-            if(skill != null)
+            foreach (var skillUpgradeIterate in skills)
             {
-                skill.genericSkill = genericSkill;
-                Log.Debug($"replacing generic skill ");
-                if (newLevel == -1) return skill; // -1 = just getting the skill rather than upgrading ,., 
+                if (!skillUpgradeIterate.skillNameToken.Equals(genericSkill.skillNameToken)) continue;
                 
-                skill.skillLevel = newLevel;
-                skill.RefreshUpgrades();
-                return skill;
+                skillUpgrade = skillUpgradeIterate;
+                break;
+            }
+            
+            if(skillUpgrade != null)
+            {
+                skillUpgrade.genericSkill = genericSkill;
+                if (newLevel == -1) return skillUpgrade; // -1 = just getting the skill rather than upgrading ,., 
+                
+                skillUpgrade.skillLevel = newLevel;
+                skillUpgrade.RefreshUpgrades();
+                return skillUpgrade;
             }
 
-            skillUpgrade = new SkillUpgrades(characterMaster, genericSkill, 0, ((ScriptableObject)genericSkill.skillDef)?.name);
+            skillUpgrade = new SkillUpgrades(characterMaster, genericSkill, 0, genericSkill.skillDef.skillNameToken);
             skills.Add(skillUpgrade);
         }
         else
         {
-            skillUpgrade = new SkillUpgrades(characterMaster, genericSkill, 0, ((ScriptableObject)genericSkill.skillDef)?.name);
+            skillUpgrade = new SkillUpgrades(characterMaster, genericSkill, 0, genericSkill.skillDef.skillNameToken);
             masterSkills.Add(characterMaster, [skillUpgrade]);
         }
         
         return skillUpgrade;
     }
     
-    public int GetStateUpgradeCount(CharacterMaster characterMaster, BaseSkillModifier skillModifier)
+    public static int GetSkillUpgradeFromSkill(GameObject bodyObject, SkillDef skillDef)
     {
-        if (characterMaster == null)
+        return GetSkillUpgradeFromSkill(bodyObject?.GetComponent<CharacterBody>()?.master, skillDef);
+    }
+    
+    public static int GetSkillUpgradeFromSkill(CharacterBody body, SkillDef skillDef)
+    {
+        return GetSkillUpgradeFromSkill(body?.master, skillDef);
+    }
+    
+    public static int GetSkillUpgradeFromSkill(CharacterMaster characterMaster, SkillDef skillDef)
+    {
+        if (!characterMaster) return 0;
+        if (!masterSkills.TryGetValue(characterMaster, out List<SkillUpgrades> skills)) return 0;
+        
+        foreach (var skillUpgradeIterate in skills)
+        {
+            if (!skillUpgradeIterate.skillNameToken.Equals(skillDef.skillNameToken)) continue;
+            return skillUpgradeIterate.skillLevel;
+        }
+        
+        return 0;
+    }
+    
+    public static int GetSkillUpgradeFromName(GameObject bodyObject, string skillToken)
+    {
+        return GetSkillUpgradeFromName(bodyObject?.GetComponent<CharacterBody>()?.master, skillToken);
+    }
+    
+    public static int GetSkillUpgradeFromName(CharacterBody body, string skillToken)
+    {
+        return GetSkillUpgradeFromName(body?.master, skillToken);
+    }
+    
+    public static int GetSkillUpgradeFromName(CharacterMaster characterMaster, string skillToken)
+    {
+        if (!characterMaster) return 0;
+        if (!masterSkills.TryGetValue(characterMaster, out List<SkillUpgrades> skills)) return 0;
+        
+        foreach (var skillUpgradeIterate in skills)
+        {
+            if (!skillUpgradeIterate.skillNameToken.Equals(skillToken)) continue;
+            return skillUpgradeIterate.skillLevel;
+        }
+        
+        return 0;
+    }
+    
+    public static int GetStateUpgradeCount(CharacterMaster characterMaster, BaseSkillModifier skillModifier)
+    {
+        if (!characterMaster)
         {
             Log.Warning($"character master when trying to get upgrade count was null !!");
             return 0;
         }
-        if (!masterSkills.TryGetValue(characterMaster, out List<SkillUpgrades> skills)) return 0;
         
-        SkillUpgrades skill = skills.FirstOrDefault(upgrades => skillModifier.skillNames.Contains(upgrades.skillName));
-        return skill?.skillLevel ?? 0;
+        if (!masterSkills.TryGetValue(characterMaster, out List<SkillUpgrades> skills)) return 0;
+
+        foreach (var skillUpgrade in skills)
+        {
+            foreach (string skillName in skillModifier.skillNames)
+            {
+                if (skillName == skillUpgrade.skillNameToken)
+                {
+                    return skillUpgrade.skillLevel;
+                }
+            }
+        }
+        
+        return 0;
     }
     
     public class SkillUpgrades
@@ -64,15 +124,15 @@ public class SkillUpgradeHelper
         public SkillPointsController skillPointsController;
         public GenericSkill genericSkill;
         public int skillLevel;
-        public string skillName;
+        public string skillNameToken;
 
-        public SkillUpgrades(CharacterMaster characterMaster, GenericSkill genericSkill, int skillLevel, string skillName)
+        public SkillUpgrades(CharacterMaster characterMaster, GenericSkill genericSkill, int skillLevel, string skillNameToken)
         {
             this.characterMaster = characterMaster;
             this.skillPointsController = characterMaster.GetComponent<SkillPointsController>();
             this.genericSkill = genericSkill;
             this.skillLevel = skillLevel;
-            this.skillName = skillName;
+            this.skillNameToken = skillNameToken;
 
             if (genericSkill)
             {
@@ -95,8 +155,7 @@ public class SkillUpgradeHelper
         {
             genericSkill.onSkillChanged -= OnSkillChanged;
             this.genericSkill = genericSkill;
-            skillName = ((ScriptableObject)genericSkill.skillDef)?.name;
-            Log.Debug($"OnSkillChanged({skillName})");
+            skillNameToken = genericSkill.skillDef.skillNameToken;
             genericSkill.onSkillChanged += OnSkillChanged;
             RefreshUpgrades();
         }
@@ -107,7 +166,7 @@ public class SkillUpgradeHelper
             
             if (!activeSkillDef && !genericSkill?.baseSkill)
             {
-                Log.Debug($"Couldn't refresh upgrades because there is no active skill. skillName: {skillName}");
+                Log.Debug($"Couldn't refresh upgrades because there is no active skill. skillNameToken: {skillNameToken}");
                 return;
             }
             if (!activeSkillDef)
@@ -117,7 +176,7 @@ public class SkillUpgradeHelper
             
             BaseSkillModifier modifier = SkillModifierManager.GetSkillModifier(activeSkillDef);
             if (modifier != null) {
-                modifier.OnSkillLeveledUp(this.skillLevel, characterMaster.GetBody(), activeSkillDef);
+                modifier.OnSkillLeveledUp(skillLevel, characterMaster.GetBody(), activeSkillDef);
                 
                 if (genericSkill) {
                     genericSkill.RecalculateValues();
@@ -129,7 +188,7 @@ public class SkillUpgradeHelper
             if (!skillPointsController.isSurvivorEnabled) return false;
             if (!genericSkill) return false;
             if (skillPointsController && !skillPointsController.hasUnspentPoints) return false;
-            return SkillModifierManager.HasSkillModifier(skillName);
+            return SkillModifierManager.HasSkillModifier(skillNameToken);
         }
     }
 }

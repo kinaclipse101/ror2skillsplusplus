@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
 using EntityStates;
+using R2API;
 using RoR2;
 using RoR2.Skills;
 using SkillsPlusPlus.Source;
@@ -12,7 +13,6 @@ namespace SkillsPlusPlus.Modifiers
 {
     public abstract class BaseSkillModifier
     {
-
         /// <inheritdoc/>
         internal Type[] EntityStateTypes { get; set; }
 
@@ -30,8 +30,8 @@ namespace SkillsPlusPlus.Modifiers
 
         public BaseSkillModifier()
         {
-            this.skillNames = new string[0];
-            this.EntityStateTypes = new Type[0];
+            this.skillNames = [];
+            this.EntityStateTypes = [];
         }
 
         public BaseSkillModifier(string[] skillNames, Type[] entityStateTypes)
@@ -102,6 +102,21 @@ namespace SkillsPlusPlus.Modifiers
         }
 
         public virtual void SetupConfig(ConfigFile config)
+        {
+            return;
+        }
+        
+        public virtual void RecalcStats(int level, CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
+        {
+            return;
+        }
+        
+        public virtual void TakeDamage(int level, HealthComponent self, DamageInfo damageInfo, CharacterBody attackerBody)
+        {
+            return;
+        }
+        
+        public virtual void TakeDamagePost(int level, HealthComponent self, DamageInfo damageInfo, CharacterBody attackerBody)
         {
             return;
         }
@@ -181,7 +196,7 @@ namespace SkillsPlusPlus.Modifiers
         /// <returns></returns>
         protected void FindSkillUpgrade(CharacterBody characterBody, String baseSkillName, bool bConfirmSkill = false)
         {
-            if (!SkillUpgradeHelper.instance.masterSkills.TryGetValue(characterBody.master, out List<SkillUpgradeHelper.SkillUpgrades> list)) return;
+            if (!SkillUpgradeHelper.masterSkills.TryGetValue(characterBody.master, out List<SkillUpgradeHelper.SkillUpgrades> list)) return;
             
             foreach (SkillUpgradeHelper.SkillUpgrades skillUpgrades in list)
             {
@@ -190,6 +205,16 @@ namespace SkillsPlusPlus.Modifiers
                 registeredSkill = skillUpgrades;
                 break;
             }
+        }
+
+        public int GetSkillLevel(CharacterBody body)
+        {
+            return SkillUpgradeHelper.GetStateUpgradeCount(body?.master, this);
+        }
+        
+        public int GetSkillLevel(GameObject bodyObject)
+        {
+            return SkillUpgradeHelper.GetStateUpgradeCount(bodyObject?.GetComponent<CharacterBody>()?.master, this);
         }
 
         #endregion
