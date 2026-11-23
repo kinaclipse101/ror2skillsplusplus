@@ -90,9 +90,9 @@ namespace SkillsPlusPlus
             foreach (GenericSkill genericSkill in body.GetComponents<GenericSkill>())
             {
                 SkillUpgradeHelper.SkillUpgrades returnVal = SkillUpgradeHelper.GetOrAddMasterSkillUpgrade(playerCharacterMasterController.master, genericSkill);
-                Log.Debug($"attempting to add master skill upgrade !! {returnVal}");
+                Log.Debug($"attempting to add master skill upgrade !! {returnVal.skillNameToken}");
                 returnVal.RefreshUpgrades();
-                returnVal.genericSkill = genericSkill;
+                genericSkill.RecalculateValues();
             }
             
             /*var skillUpgrades = body.GetComponents<SkillUpgrade>();
@@ -184,6 +184,7 @@ namespace SkillsPlusPlus
                 {
                     SkillUpgradeHelper.SkillUpgrades returnVal = SkillUpgradeHelper.GetOrAddMasterSkillUpgrade(playerCharacterMasterController.master, genericSkill);
                     returnVal.RefreshUpgrades();
+                    genericSkill.RecalculateValues();
                     Log.Debug($"refreshed skill {returnVal.skillNameToken}");
                     //skillUpgrade.targetGenericSkill = genericSkill;
                 }
@@ -250,13 +251,13 @@ namespace SkillsPlusPlus
         }
 
         [Command]
-        public void CmdOnBuySkill(SkillUpgradeHelper.SkillUpgrades skillUpgrades) {
+        public void CmdOnBuySkill(SkillUpgradeHelper.SkillUpgrades skillUpgrades, GenericSkill genericSkill) {
             if (!isSurvivorEnabled) return;
             if (!skillUpgrades.CanUpgradeSkill()) return;
             
             DeductSkillPoints(1);
             skillUpgrades.skillLevel += 1;
-            SkillUpgradeHelper.GetOrAddMasterSkillUpgrade(playerCharacterMasterController.master, skillUpgrades.genericSkill, skillUpgrades.skillLevel);
+            SkillUpgradeHelper.GetOrAddMasterSkillUpgrade(playerCharacterMasterController.master, genericSkill, skillUpgrades.skillLevel);
             Log.Debug($"CmdOnBuySkill({skillUpgrades.skillNameToken}): skillLevel: {skillUpgrades.skillLevel}");
 
 

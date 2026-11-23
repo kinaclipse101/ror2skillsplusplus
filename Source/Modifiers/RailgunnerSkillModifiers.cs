@@ -16,7 +16,7 @@ using static R2API.RecalculateStatsAPI;
 
 namespace SkillsPlusPlus.Modifiers
 {
-    [SkillLevelModifier("RailgunnerBodyFirePistol", typeof(FirePistol))]
+    [SkillLevelModifier("RAILGUNNER_PRIMARY_NAME", typeof(FirePistol))]
     internal class RailgunnerXQRSkillModifier : SimpleSkillModifier<FirePistol>
     {
         private float originalDuration = 0;
@@ -58,7 +58,7 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("RailgunnerBodyScopeHeavy", typeof(FireSnipeHeavy))]
+    [SkillLevelModifier("RAILGUNNER_SECONDARY_NAME", typeof(FireSnipeHeavy))]
     internal class RailgunnerM99SkillModifier : SimpleSkillModifier<FireSnipeHeavy>
     {
         private static int EmpoweredRoundsLeft = 0;
@@ -103,14 +103,14 @@ namespace SkillsPlusPlus.Modifiers
         {
             if (M99skill != null)
             {
-                EmpoweredRoundsLeft = Math.Min(M99skill.genericSkill.maxStock, MaxEmpoweredRounds);
+                //EmpoweredRoundsLeft = Math.Min(M99skill.genericSkill.maxStock, MaxEmpoweredRounds);
             }
 
             orig(self);
         }
     }
 
-    [SkillLevelModifier("RailgunnerBodyScopeLight", typeof(FireSnipeLight), typeof(WindUpScopeLight), typeof(WindDownScopeLight))]
+    [SkillLevelModifier("RAILGUNNER_SECONDARY_ALT_NAME", typeof(FireSnipeLight), typeof(WindUpScopeLight), typeof(WindDownScopeLight))]
     internal class RailgunnerHH44SkillModifier : BaseSkillModifier
     {
         private static BuffDef KillingSpreeBuff;
@@ -211,7 +211,7 @@ namespace SkillsPlusPlus.Modifiers
             }
         }
 
-        public void GlobalEventManager_OnCharacterDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, RoR2.GlobalEventManager self, RoR2.DamageReport damageReport)
+        /*public void GlobalEventManager_OnCharacterDeath(On.RoR2.GlobalEventManager.orig_OnCharacterDeath orig, RoR2.GlobalEventManager self, RoR2.DamageReport damageReport)
         {
             if (bScopeActive && damageReport.attackerBody == HH44Skill.genericSkill.characterBody && HH44Skill.skillLevel > 0)
             {
@@ -243,7 +243,7 @@ namespace SkillsPlusPlus.Modifiers
             }
 
             orig(self);
-        }
+        }*/
 
         public static void RecalculateStats(CharacterBody sender, StatHookEventArgs args)
         {
@@ -265,15 +265,15 @@ namespace SkillsPlusPlus.Modifiers
         {
             RegisterKillingBuffs();
 
-            On.RoR2.GlobalEventManager.OnCharacterDeath += GlobalEventManager_OnCharacterDeath;
-            On.RoR2.CharacterBody.Update += CharacterBody_Update;
+            //On.RoR2.GlobalEventManager.OnCharacterDeath += GlobalEventManager_OnCharacterDeath;
+            //On.RoR2.CharacterBody.Update += CharacterBody_Update;
             GetStatCoefficients += RecalculateStats;
 
             base.SetupSkill();
         }
     }
 
-    [SkillLevelModifier("RailgunnerBodyFireMineConcussive", typeof(FireMineConcussive))]
+    [SkillLevelModifier("RAILGUNNER_UTILITY_NAME", typeof(FireMineConcussive))]
     internal class RailgunnerConcussiveMineSkillModifier : SimpleSkillModifier<FireMineConcussive>
     {
         private static BuffDef FeatherFallBuff;
@@ -347,7 +347,7 @@ namespace SkillsPlusPlus.Modifiers
                 if (ConcussiveMineSkill.skillLevel != 0)
                 {
                     self.body.AddTimedBuff(FeatherFallBuff, 1.0f + (0.5f * ConcussiveMineSkill.skillLevel));
-                    if (self.body != ConcussiveMineSkill.genericSkill.characterBody)
+                    //if (self.body != ConcussiveMineSkill.genericSkill.characterBody)
                     {
                         self?.body?.characterMotor?.AddDisplacement(new Vector3(0f, 5f, 0f));
                     }
@@ -371,7 +371,7 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("RailgunnerBodyFireMineBlinding", typeof(FireMineBlinding))]
+    [SkillLevelModifier("RAILGUNNER_UTILITY_ALT_NAME", typeof(FireMineBlinding))]
     internal class RailgunnerPolarFieldMineSkillModifier : SimpleSkillModifier<FireMineBlinding>
     {
         private static BuffDef TimePressureDebuff;
@@ -483,7 +483,7 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("RailgunnerBodyChargeSnipeSuper", typeof(FireSnipeSuper))]
+    [SkillLevelModifier("RAILGUNNER_SPECIAL_NAME", typeof(FireSnipeSuper))]
     internal class RailgunnerSuperchargeSkillModifier : SimpleSkillModifier<FireSnipeSuper>
     {
         private static float originalProcRate = 0f;
@@ -543,7 +543,7 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("RailgunnerBodyChargeSnipeCryo", typeof(FireSnipeCryo), typeof(ExpiredCryo), typeof(ChargedCryo))]
+    [SkillLevelModifier("RAILGUNNER_SPECIAL_ALT_NAME", typeof(FireSnipeCryo), typeof(ExpiredCryo), typeof(ChargedCryo))]
     internal class RailgunnerCryochargeSkillModifier : BaseSkillModifier
     {
         private static BuffDef FrostfireBuff;
@@ -631,7 +631,7 @@ namespace SkillsPlusPlus.Modifiers
 
         public override void TakeDamage(int level, HealthComponent self, DamageInfo di, CharacterBody attackerBody)
         {
-            if (bCryoActive && di.inflictor && di.inflictor.TryGetComponent(out CharacterBody body) && body == CryochargeSkill.genericSkill.characterBody)
+            if (bCryoActive && di.inflictor && di.inflictor.TryGetComponent(out CharacterBody body))
             {
                 if (level > 0)
                 {

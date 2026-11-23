@@ -1,16 +1,14 @@
 using RoR2;
 using RoR2.Skills;
 using RoR2.Projectile;
-
 using EntityStates.Croco;
 using UnityEngine;
+
 namespace SkillsPlusPlus.Modifiers
 {
-
-    [SkillLevelModifier("CrocoSlash", typeof(Slash))]
+    [SkillLevelModifier("CROCO_PRIMARY_NAME", typeof(Slash))]
     internal class CrocoSlashSkillModifier : SimpleSkillModifier<Slash>
     {
-
         public override void OnSkillEnter(Slash slash, int level)
         {
             base.OnSkillEnter(slash, level);
@@ -28,13 +26,11 @@ namespace SkillsPlusPlus.Modifiers
             Log.Debug($"comboFinisherDamageCoefficient: {Slash.comboFinisherDamageCoefficient}, comboFinisherBaseDurationBeforeInterruptable: {Slash.comboFinisherBaseDurationBeforeInterruptable}");
             Slash.comboFinisherDamageCoefficient = MultScaling(4, 0.25f, level); // combined with +25% of damage bonus this is effectively 50% for the final attack
         }
-
     }
 
-    [SkillLevelModifier("CrocoSpit", typeof(FireSpit))]
+    [SkillLevelModifier("CROCO_SECONDARY_NAME", typeof(FireSpit))]
     internal class CrocoSpitSkillModifier : SimpleSkillModifier<FireSpit>
     {
-
         public override void OnSkillEnter(FireSpit fireSpit, int level)
         {
             base.OnSkillEnter(fireSpit, level);
@@ -51,13 +47,11 @@ namespace SkillsPlusPlus.Modifiers
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
             skillDef.baseMaxStock = (int)AdditiveScaling(1, 0.5f, level);
         }
-
     }
 
-    [SkillLevelModifier("CrocoBite", typeof(Bite))]
+    [SkillLevelModifier("CROCO_SECONDARY_ALT_NAME", typeof(Bite))]
     internal class CrocoBiteSkillModifier : SimpleSkillModifier<Bite>
     {
-
         public override void OnSkillEnter(Bite bite, int level)
         {
             base.OnSkillEnter(bite, level);
@@ -72,10 +66,9 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("CrocoLeap", typeof(Leap))]
+    [SkillLevelModifier("CROCO_UTILITY_NAME", typeof(Leap))]
     internal class CrocoLeapSkillModifier : SimpleSkillModifier<Leap>
     {
-
         public override void OnSkillEnter(Leap leap, int level)
         {
             base.OnSkillEnter(leap, level);
@@ -98,13 +91,11 @@ namespace SkillsPlusPlus.Modifiers
                 fxTransform.localScale = Vector3.one * MultScaling(8.0f, 0.20f, level);
             }
         }
-
     }
 
-    [SkillLevelModifier("CrocoChainableLeap", typeof(ChainableLeap))]
+    [SkillLevelModifier("CROCO_UTILITY_ALT1_NAME", typeof(ChainableLeap))]
     internal class CrocoChainableLeapSkillModifier : SimpleSkillModifier<ChainableLeap>
     {
-
         public override void OnSkillEnter(ChainableLeap skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
@@ -119,13 +110,11 @@ namespace SkillsPlusPlus.Modifiers
             // 0.5s extra cooldown per level
             ChainableLeap.refundPerHit = MultScaling(2, 0.15f, level);
         }
-
     }
 
-    [SkillLevelModifier(new string[] { "CrocoDisease", "Plague" }, typeof(FireDiseaseProjectile))]
+    [SkillLevelModifier(["CROCO_SPECIAL_NAME", "ANCIENTSCEPTER_CROCO_DISEASENAME"], typeof(FireDiseaseProjectile))]
     internal class CrocoDiseaseSkillModifier : SimpleSkillModifier<FireDiseaseProjectile>
     {
-
         public override void OnSkillEnter(FireDiseaseProjectile fireDisease, int level)
         {
             base.OnSkillEnter(fireDisease, level);
@@ -138,6 +127,5 @@ namespace SkillsPlusPlus.Modifiers
             Disease.maxBounces = AdditiveScaling(20, 5, level);
             Disease.bounceRange = MultScaling(25, 0.20f, level);
         }
-
     }
 }

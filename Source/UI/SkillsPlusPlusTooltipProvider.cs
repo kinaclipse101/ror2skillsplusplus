@@ -5,7 +5,6 @@ namespace SkillsPlusPlus.UI
 {
     internal class SkillUpgradeTooltipProvider : MonoBehaviour
     {
-
         public string skillName;
         public SkillIcon skillIcon;
 

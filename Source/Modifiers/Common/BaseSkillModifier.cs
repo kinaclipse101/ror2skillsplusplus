@@ -200,7 +200,7 @@ namespace SkillsPlusPlus.Modifiers
             
             foreach (SkillUpgradeHelper.SkillUpgrades skillUpgrades in list)
             {
-                if (!skillNames.Contains(((ScriptableObject)skillUpgrades.genericSkill.skillDef)?.name)) continue;
+                if (!skillNames.Contains(skillUpgrades.skillNameToken)) continue;
                     
                 registeredSkill = skillUpgrades;
                 break;

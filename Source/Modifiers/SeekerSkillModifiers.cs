@@ -1,6 +1,12 @@
-﻿namespace SkillsPlusPlus.Source.Modifiers
+﻿using EntityStates;
+using EntityStates.Seeker;
+using RoR2;
+using RoR2.Skills;
+using SkillsPlusPlus.Modifiers;
+
+namespace SkillsPlusPlus.Source.Modifiers
 {
-    /*[SkillLevelModifier("SeekerBodySpiritPunchCrosshair", typeof(SpiritPunch))]
+    [SkillLevelModifier("SEEKER_PRIMARY_NAME", typeof(SpiritPunch))]
     class SeekerPunchSkillModifier : BaseSkillModifier
     {
         public override void OnSkillLeveledUp(int level, CharacterBody characterBody, SkillDef skillDef)
@@ -13,15 +19,14 @@
             base.OnSkillEnter(skillState, level);
             if (skillState is SpiritPunch)
             {
-                Logger.Debug("SpiritPunch");
+                Log.Debug("SpiritPunch");
             }
         }
     }
 
-    [SkillLevelModifier("SeekerBodyUnseenHand", typeof(UnseenHand))]
+    [SkillLevelModifier("SEEKER_SECONDARY_NAME", typeof(UnseenHand))]
     class SeekerUnseenHandSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBody, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBody, skillDef);
@@ -33,15 +38,14 @@
 
             if (skillState is UnseenHand)
             {
-                Logger.Debug("UnseenHand");
+                Log.Debug("UnseenHand");
             }
         }
     }
 
-    [SkillLevelModifier("SeekerBodySoulSpiral", typeof(SoulSpiral))]
+    [SkillLevelModifier("SEEKER_SECONDARY_ALT1_NAME", typeof(SoulSpiral))]
     class SeekerSoulSpiralSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBody, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBody, skillDef);
@@ -53,15 +57,14 @@
 
             if (skillState is SoulSpiral)
             {
-                Logger.Debug("SoulSpiral");
+                Log.Debug("SoulSpiral");
             }
         }
     }
 
-    [SkillLevelModifier("SeekerBodySojourn", typeof(Sojourn), typeof(SojournVehicle))]
+    [SkillLevelModifier("SEEKER_UTILITY_NAME", typeof(Sojourn), typeof(SojournVehicle))]
     class SeekerSojournSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBody, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBody, skillDef);
@@ -73,7 +76,7 @@
 
             if (skillState is Sojourn)
             {
-                Logger.Debug("Sojourn");
+                Log.Debug("Sojourn");
             } 
         }
         public override void SetupSkill()
@@ -85,15 +88,15 @@
                 orig(self, passenger);
                 if (self.name.Contains("SojournVehicle"))
                 {
-                    Logger.Debug("sojourn started !!!");
+                    Log.Debug("sojourn started !!!");
                     var car = self.GetComponent<SojournVehicle>();
                     if (car == null)
                     {
-                        Logger.Debug("erm., ,. nvm ,.,..");
+                        Log.Debug("erm., ,. nvm ,.,..");
                     }
                     else
                     {
-                        Logger.Debug("sojourn real !!");
+                        Log.Debug("sojourn real !!");
                         car.startingSpeedBoost = 100f;
                     }
                 }
@@ -101,7 +104,7 @@
         }
     }
 
-    [SkillLevelModifier("SeekerBodyMeditate2", typeof(Meditate),typeof(MeditationUI))]
+    [SkillLevelModifier("SEEKER_SPECIAL_NAME", typeof(Meditate))]
     class SeekerMeditateSkillModifier : BaseSkillModifier
     {
 
@@ -116,11 +119,8 @@
 
             if (skillState is Meditate)
             {
-                Logger.Debug("Meditate");
-            } else if (skillState is MeditationUI)
-            {
-                Logger.Debug("MeditationUI");
+                Log.Debug("Meditate");
             }
         }
-    }*/
+    }
 }

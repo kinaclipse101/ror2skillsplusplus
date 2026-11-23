@@ -16,9 +16,10 @@ public static class SkillUpgradeHelper
         
         if (masterSkills.TryGetValue(characterMaster, out List<SkillUpgrades> skills))
         {
+            var modifier = SkillModifierManager.GetSkillModifier(genericSkill.skillDef);
             foreach (var skillUpgradeIterate in skills)
             {
-                if (!skillUpgradeIterate.skillNameToken.Equals(genericSkill.skillNameToken)) continue;
+                if (skillUpgradeIterate.skillModifier != modifier) continue;
                 
                 skillUpgrade = skillUpgradeIterate;
                 break;
@@ -26,20 +27,21 @@ public static class SkillUpgradeHelper
             
             if(skillUpgrade != null)
             {
-                skillUpgrade.genericSkill = genericSkill;
+                skillUpgrade.skillDef = genericSkill.skillDef;
                 if (newLevel == -1) return skillUpgrade; // -1 = just getting the skill rather than upgrading ,., 
                 
                 skillUpgrade.skillLevel = newLevel;
                 skillUpgrade.RefreshUpgrades();
+                genericSkill.RecalculateValues();
                 return skillUpgrade;
             }
 
-            skillUpgrade = new SkillUpgrades(characterMaster, genericSkill, 0, genericSkill.skillDef.skillNameToken);
+            skillUpgrade = new SkillUpgrades(characterMaster, genericSkill.skillDef, 0, genericSkill.skillNameToken);
             skills.Add(skillUpgrade);
         }
         else
         {
-            skillUpgrade = new SkillUpgrades(characterMaster, genericSkill, 0, genericSkill.skillDef.skillNameToken);
+            skillUpgrade = new SkillUpgrades(characterMaster, genericSkill.skillDef, 0, genericSkill.skillNameToken);
             masterSkills.Add(characterMaster, [skillUpgrade]);
         }
         
@@ -122,28 +124,25 @@ public static class SkillUpgradeHelper
     {
         public CharacterMaster characterMaster;
         public SkillPointsController skillPointsController;
-        public GenericSkill genericSkill;
+        public SkillDef skillDef;
+        public BaseSkillModifier skillModifier;
         public int skillLevel;
         public string skillNameToken;
 
-        public SkillUpgrades(CharacterMaster characterMaster, GenericSkill genericSkill, int skillLevel, string skillNameToken)
+        public SkillUpgrades(CharacterMaster characterMaster, SkillDef skillDef, int skillLevel, string skillNameToken)
         {
             this.characterMaster = characterMaster;
             this.skillPointsController = characterMaster.GetComponent<SkillPointsController>();
-            this.genericSkill = genericSkill;
+            this.skillDef = skillDef;
+            skillModifier = SkillModifierManager.GetSkillModifier(skillDef);
+            //Log.Debug($"made new skill def from {skillModifier.skillNames[0]} skillModifier {skillDef.skillNameToken}");
             this.skillLevel = skillLevel;
             this.skillNameToken = skillNameToken;
-
-            if (genericSkill)
-            {
-                genericSkill.onSkillChanged += OnSkillChanged;
-            }
 
             if (characterMaster)
             {
                 characterMaster.onBodyStart += CharacterMasterOnonBodyStart;
             }
-            RefreshUpgrades();
         }
 
         private void CharacterMasterOnonBodyStart(CharacterBody characterBody)
@@ -151,42 +150,15 @@ public static class SkillUpgradeHelper
             
         }
 
-        private void OnSkillChanged(GenericSkill genericSkill)
-        {
-            genericSkill.onSkillChanged -= OnSkillChanged;
-            this.genericSkill = genericSkill;
-            skillNameToken = genericSkill.skillDef.skillNameToken;
-            genericSkill.onSkillChanged += OnSkillChanged;
-            RefreshUpgrades();
-        }
-
         public void RefreshUpgrades()
         {
-            SkillDef activeSkillDef = genericSkill?.skillDef;
-            
-            if (!activeSkillDef && !genericSkill?.baseSkill)
-            {
-                Log.Debug($"Couldn't refresh upgrades because there is no active skill. skillNameToken: {skillNameToken}");
-                return;
-            }
-            if (!activeSkillDef)
-            {
-                activeSkillDef = genericSkill?.baseSkill;
-            }
-            
-            BaseSkillModifier modifier = SkillModifierManager.GetSkillModifier(activeSkillDef);
-            if (modifier != null) {
-                modifier.OnSkillLeveledUp(skillLevel, characterMaster.GetBody(), activeSkillDef);
-                
-                if (genericSkill) {
-                    genericSkill.RecalculateValues();
-                }
+            if (skillModifier != null) {
+                skillModifier.OnSkillLeveledUp(skillLevel, characterMaster.GetBody(), skillDef);
             }
         }
         
         public bool CanUpgradeSkill() {
             if (!skillPointsController.isSurvivorEnabled) return false;
-            if (!genericSkill) return false;
             if (skillPointsController && !skillPointsController.hasUnspentPoints) return false;
             return SkillModifierManager.HasSkillModifier(skillNameToken);
         }

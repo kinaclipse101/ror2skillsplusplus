@@ -139,7 +139,7 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("MAGE_SPECIAL_FIRE_NAME", typeof(Flamethrower))]
+    [SkillLevelModifier(["MAGE_SPECIAL_FIRE_NAME", "ANCIENTSCEPTER_MAGE_FLAMETHROWERNAME"], typeof(Flamethrower))]
     internal class MageFlamethrowerSkillModifier : SimpleSkillModifier<Flamethrower>
     {
         private float baseRadius = 2f;
@@ -170,7 +170,7 @@ namespace SkillsPlusPlus.Modifiers
 
     }
 
-    [SkillLevelModifier("MAGE_SPECIAL_LIGHTNING_NAME", typeof(FlyUpState))]
+    [SkillLevelModifier(["MAGE_SPECIAL_LIGHTNING_NAME", "ANCIENTSCEPTER_MAGE_FLYUPNAME"], typeof(FlyUpState))]
     internal class MageFlyUpSkillModifier : SimpleSkillModifier<FlyUpState>
     {
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)

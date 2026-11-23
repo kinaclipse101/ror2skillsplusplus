@@ -1,26 +1,21 @@
 using System;
 using System.Collections.Generic;
-
 using RoR2;
 using RoR2.Projectile;
 using RoR2.Skills;
 using RoR2.UI;
-
 using EntityStates;
 using EntityStates.Toolbot;
 using R2API;
-using R2API.Utils;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using static RoR2.RoR2Content;
 
 namespace SkillsPlusPlus.Modifiers
 {
-
-    [SkillLevelModifier("ToolbotBodyFireNailgun", typeof(FireNailgun))]
+    [SkillLevelModifier("TOOLBOT_PRIMARY_NAME", typeof(FireNailgun))]
     internal class ToolbotSkillModifier : SimpleSkillModifier<FireNailgun>
     {
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
@@ -31,10 +26,9 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("ToolbotBodyFireSpear", typeof(FireSpear), typeof(CooldownSpear))]
+    [SkillLevelModifier("TOOLBOT_PRIMARY_ALT1_NAME", typeof(FireSpear), typeof(CooldownSpear))]
     internal class ToolbotSpearSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillEnter(BaseState skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
@@ -54,10 +48,9 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("ToolbotBodyFireGrenadeLauncher", typeof(FireGrenadeLauncher))]
+    [SkillLevelModifier("TOOLBOT_PRIMARY_ALT2_NAME", typeof(FireGrenadeLauncher))]
     internal class ToolbotGrenadeLauncherSkillModifier : SimpleSkillModifier<FireGrenadeLauncher>
     {
-
         private static readonly float stockImageInterspacing = 13.5f;
 
         public override void OnSkillEnter(FireGrenadeLauncher skillState, int level)
@@ -144,10 +137,9 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("ToolbotBodyFireBuzzsaw", typeof(FireBuzzsaw))]
+    [SkillLevelModifier("TOOLBOT_PRIMARY_ALT3_NAME", typeof(FireBuzzsaw))]
     internal class ToolbotBuzzsawSkillModifier : SimpleSkillModifier<FireBuzzsaw>
     {
-
         public override void OnSkillEnter(FireBuzzsaw fireBuzzsaw, int level)
         {
             base.OnSkillEnter(fireBuzzsaw, level);
@@ -171,10 +163,9 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("ToolbotBodyStunDrone", typeof(AimStunDrone))]
+    [SkillLevelModifier("TOOLBOT_SECONDARY_NAME", typeof(AimStunDrone))]
     internal class ToolbotStunDroneSkillModifier : SimpleSkillModifier<AimStunDrone>
     {
-
         public override void OnSkillEnter(AimStunDrone aimStunDrone, int level)
         {
             base.OnSkillEnter(aimStunDrone, level);
@@ -197,10 +188,9 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier(new string[] { "ToolbotBodyToolbotDash", "Breach Mode" }, typeof(ToolbotDash))]
+    [SkillLevelModifier(["TOOLBOT_UTILITY_NAME", "ANCIENTSCEPTER_TOOLBOT_DASHNAME"], typeof(ToolbotDash))]
     internal class ToolbotDashSkillModifier : SimpleSkillModifier<ToolbotDash>
     {
-
         public override void OnSkillEnter(ToolbotDash toolbotDash, int level)
         {
             base.OnSkillEnter(toolbotDash, level);
@@ -220,10 +210,9 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("ToolbotBodySwap", typeof(ToolbotStanceSwap))]
+    [SkillLevelModifier("TOOLBOT_SPECIAL_NAME", typeof(ToolbotStanceSwap))]
     internal class ToolbotEquipmentSwapSkillModifier : SimpleSkillModifier<ToolbotStanceSwap>
     {
-
         public override void OnSkillEnter(ToolbotStanceSwap toolbotStanceSwap, int level)
         {
             base.OnSkillEnter(toolbotStanceSwap, level);
@@ -243,10 +232,9 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("ToolbotDualWield", typeof(ToolbotDualWield))]
+    [SkillLevelModifier("TOOLBOT_SPECIAL_ALT_NAME", typeof(ToolbotDualWield))]
     internal class ToolbotPowerModeSkillModifier : SimpleSkillModifier<ToolbotDualWield>
     {
-
         public override void OnSkillEnter(ToolbotDualWield toolbotStanceSwap, int level)
         {
             base.OnSkillEnter(toolbotStanceSwap, level);
@@ -267,8 +255,6 @@ namespace SkillsPlusPlus.Modifiers
         private static float damageBonus = 0f;
         private static float moveSpeedBonus = 0f;
         private static BuffDef dualWieldArmorBuff;
-
-
 
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {

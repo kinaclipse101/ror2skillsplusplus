@@ -70,7 +70,7 @@ public sealed class SkillsPlugin : BaseUnityPlugin
         if (!SkillUpgradeHelper.masterSkills.TryGetValue(master, out var skillUpgrades)) return;
         foreach (var skillUpgrade in skillUpgrades)
         {
-            BaseSkillModifier modifier = SkillModifierManager.GetSkillModifier(skillUpgrade.genericSkill?.skillDef);
+            BaseSkillModifier modifier = SkillModifierManager.GetSkillModifier(skillUpgrade?.skillDef);
             modifier?.TakeDamage(skillUpgrade.skillLevel, self, damageinfo, master.GetBody());
         }
         
@@ -78,7 +78,7 @@ public sealed class SkillsPlugin : BaseUnityPlugin
         
         foreach (var skillUpgrade in skillUpgrades)
         {
-            BaseSkillModifier modifier = SkillModifierManager.GetSkillModifier(skillUpgrade.genericSkill?.skillDef);
+            BaseSkillModifier modifier = SkillModifierManager.GetSkillModifier(skillUpgrade?.skillDef);
             modifier?.TakeDamagePost(skillUpgrade.skillLevel, self, damageinfo, master.GetBody());
         }
     }
@@ -91,7 +91,7 @@ public sealed class SkillsPlugin : BaseUnityPlugin
         if (!SkillUpgradeHelper.masterSkills.TryGetValue(master, out var skillUpgrades)) return;
         foreach (var skillUpgrade in skillUpgrades)
         {
-            BaseSkillModifier modifier = SkillModifierManager.GetSkillModifier(skillUpgrade.genericSkill?.skillDef);
+            BaseSkillModifier modifier = SkillModifierManager.GetSkillModifier(skillUpgrade?.skillDef);
             modifier?.RecalcStats(skillUpgrade.skillLevel, sender, args);
         }
     }
@@ -190,7 +190,7 @@ public sealed class SkillsPlugin : BaseUnityPlugin
             foreach (var skillDef in SkillCatalog.allSkillDefs)
             {
                 if (skillDef.skillNameToken == "") continue;
-                Log.Debug($"basename {((ScriptableObject)skillDef)?.name} nametoken {skillDef.skillNameToken}");
+                Log.Debug($"basename {((ScriptableObject)skillDef)?.name} nametoken {skillDef.skillNameToken} real name {Language.GetStringFormatted(skillDef.skillNameToken)} skillname {skillDef.skillName}");
             }
         }
     }

@@ -299,17 +299,6 @@ namespace SkillsPlusPlus.Source.Modifiers
             skillState.characterBody.SetBuffCount(levelupBuff.buffIndex, level);
         }
 
-        public override void OnSkillExit(BaseState skillState, int level)
-        {
-            base.OnSkillExit(skillState, level);
-
-            Log.Debug("YesChef");
-            if (skillState.characterBody.HasBuff(levelupBuff))
-            {
-                skillState.characterBody.SetBuffCount(levelupBuff.buffIndex, 0);
-            }
-        }
-
         public override void SetupSkill()
         {
             base.SetupSkill();

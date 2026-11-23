@@ -42,7 +42,7 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("CAPTAIN_UTILITY_NAME", typeof(CallAirstrike1), typeof(CallAirstrike2), typeof(CallAirstrike3))]
+    [SkillLevelModifier(["CAPTAIN_UTILITY_NAME", "ANCIENTSCEPTER_CAPTAIN_AIRSTRIKENAME"], typeof(CallAirstrike1), typeof(CallAirstrike2), typeof(CallAirstrike3))]
     internal class CaptainAirstrikeSkillModifier : SimpleSkillModifier<CallAirstrikeBase>
     {
         public override void OnSkillEnter(CallAirstrikeBase skillState, int level)
@@ -81,52 +81,6 @@ namespace SkillsPlusPlus.Modifiers
             }
         }
 
-        public override void OnSkillEnter(BaseState skillState, int level)
-        {
-            base.OnSkillEnter(skillState, level);
-
-            //Try and update the speed of the Indicator
-            if (skillState is CallAirstrikeAlt callAirstrikeAlt && callAirstrikeAlt.projectilePrefab.TryGetComponent(out ProjectileController projectileController) && registeredSkill != null)
-            {
-                Log.Debug("1");
-                var CenterTransform = projectileController.ghostPrefab.transform.Find("AreaIndicatorCenter");
-                if (CenterTransform != null)
-                {
-                    Log.Debug("12");
-                    for (int i = 0; i < CenterTransform.childCount; i++)
-                    {
-                        Log.Debug("4");
-                        var child = CenterTransform.GetChild(i);
-                        if (child != null && child.gameObject != null)
-                        {
-                            //Update the Ring Animation
-                            if (child.TryGetComponent(out ObjectScaleCurve scaleCurve))
-                            {
-                                scaleCurve.timeMax = Mathf.Clamp(20f - level, 0, 20);
-                            }
-                            else
-                            {
-                                //Dodge Rings and update the Lasers
-                                var vertical = child.Find("LaserVerticalOffset");
-                                if (vertical)
-                                {
-                                    var laser = vertical.Find("Laser");
-                                    if (laser)
-                                    {
-                                        if (laser != null && laser.gameObject.TryGetComponent(out ObjectTransformCurve laserCurve))
-                                        {
-                                            laserCurve.timeMax = Mathf.Clamp(20f - level, 0, 20);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-        }
-
         public override void SetupSkill()
         {
             On.EntityStates.Captain.Weapon.CallAirstrikeBase.ModifyProjectile += CallAirstrikeBaseOnModifyProjectile;
@@ -142,15 +96,13 @@ namespace SkillsPlusPlus.Modifiers
         {
             orig(self, ref fireprojectileinfo);
 
-            if (self is CallAirstrikeAlt)
-            {
-                int skillLevel = SkillUpgradeHelper.GetSkillUpgradeFromName(self.gameObject, "CAPTAIN_UTILITY_ALT1_NAME");
-                if(skillLevel > 0)
-                {
-                    fireprojectileinfo.useFuseOverride = true;
-                    fireprojectileinfo.fuseOverride = Mathf.Clamp(20f - skillLevel, 0, 20);
-                }
-            }
+            if (self is not CallAirstrikeAlt) return;
+            
+            int skillLevel = SkillUpgradeHelper.GetSkillUpgradeFromName(self.gameObject, "CAPTAIN_UTILITY_ALT1_NAME");
+            if (skillLevel <= 0) return;
+            
+            fireprojectileinfo.useFuseOverride = true;
+            fireprojectileinfo.fuseOverride = Mathf.Clamp(20f - skillLevel, 0, 20);
         }
 
         public override void RecalcStats(int level, CharacterBody sender, StatHookEventArgs args)
@@ -160,30 +112,21 @@ namespace SkillsPlusPlus.Modifiers
         
         public override void TakeDamage(int level, HealthComponent self, DamageInfo di, CharacterBody characterBody)
         {
-            if (di != null && self != null)
+            if (level <= 0) return;
+            if (diabloStrikeProjectileCatalogIndex == -1337)
             {
-                if (diabloStrikeProjectileCatalogIndex == -1337)
-                {
-                    diabloStrikeProjectileCatalogIndex = ProjectileCatalog.FindProjectileIndex("CaptainAirstrikeAltProjectile");
-                }
-
-                if (di.inflictor && di.inflictor.TryGetComponent(out ProjectileController controller) && controller.catalogIndex == diabloStrikeProjectileCatalogIndex)
-                {
-                    if (di.attacker && di.attacker.TryGetComponent(out CharacterBody attackerBody))
-                    {
-                        if (self?.body?.teamComponent?.teamIndex == attackerBody?.teamComponent?.teamIndex && level > 0)
-                        {
-                            var friendlyFireProtection = (25 / ((float)level + 25));
-                            if (self.combinedHealthFraction > friendlyFireProtection)
-                            {
-                                di.damage = (self.combinedHealth - (level * 0.04f * self.fullCombinedHealth)) * 2;    //Friendly fire deals half damage
-                                di.damageType |= DamageType.BypassArmor;
-                                di.damageType &= ~DamageType.AOE;
-                            }
-                        }
-                    }
-                }
+                diabloStrikeProjectileCatalogIndex = ProjectileCatalog.FindProjectileIndex("CaptainAirstrikeAltProjectile");
             }
+
+            if (!di.inflictor || !di.inflictor.TryGetComponent(out ProjectileController controller) || controller.catalogIndex != diabloStrikeProjectileCatalogIndex) return;
+            if (self?.body?.teamComponent?.teamIndex != characterBody?.teamComponent?.teamIndex) return;
+            
+            var friendlyFireProtection = (25 / ((float)level + 25));
+            if (self.combinedHealthFraction <= friendlyFireProtection) return;
+            
+            di.damage = (self.combinedHealth - (level * 0.04f * self.fullCombinedHealth)) * 2;    //Friendly fire deals half damage
+            di.damageType |= DamageType.BypassArmor;
+            di.damageType &= ~DamageType.AOE;
         }
     }
 
@@ -209,63 +152,49 @@ namespace SkillsPlusPlus.Modifiers
         private void Setup()
         {
             ghostController = GetComponent<ProjectileGhostController>();
-            Log.Debug($"ghostController.authorityTransform: {ghostController.authorityTransform}");
-            int skillLevel = SkillUpgradeHelper.GetSkillUpgradeFromName(ghostController.authorityTransform?.GetComponent<ProjectileController>()?.owner,
-                "CAPTAIN_UTILITY_ALT1_NAME");
-            Log.Debug(" level = " + skillLevel);
-            
-           
-            Log.Debug("1");
+            int skillLevel = SkillUpgradeHelper.GetSkillUpgradeFromName(ghostController.authorityTransform?.GetComponent<ProjectileController>()?.owner, "CAPTAIN_UTILITY_ALT1_NAME");
+
             var CenterTransform = transform.Find("AreaIndicatorCenter");
-            if (CenterTransform != null)
+            if (!CenterTransform) return;
+            
+            for (int i = 0; i < CenterTransform.childCount; i++)
             {
-                Log.Debug("12");
-                for (int i = 0; i < CenterTransform.childCount; i++)
+                var child = CenterTransform.GetChild(i);
+
+                //Update the Ring Animation
+                if (child.TryGetComponent(out ObjectScaleCurve scaleCurve))
                 {
-                    Log.Debug("4");
-                    var child = CenterTransform.GetChild(i);
-                    if (child != null && child.gameObject != null)
+                    scaleCurve.timeMax = Mathf.Clamp(20f - skillLevel, 0, 20);
+                }
+                else
+                {
+                    //Dodge Rings and update the Lasers
+                    var vertical = child.Find("LaserVerticalOffset");
+                    if (!vertical) continue;
+                    
+                    var laser = vertical.Find("Laser");
+                    if (!laser) continue;
+                    
+                    if (laser.gameObject.TryGetComponent(out ObjectTransformCurve laserCurve))
                     {
-                        //Update the Ring Animation
-                        if (child.TryGetComponent(out ObjectScaleCurve scaleCurve))
-                        {
-                            scaleCurve.timeMax = Mathf.Clamp(20f - skillLevel, 0, 20);
-                        }
-                        else
-                        {
-                            //Dodge Rings and update the Lasers
-                            var vertical = child.Find("LaserVerticalOffset");
-                            if (vertical)
-                            {
-                                var laser = vertical.Find("Laser");
-                                if (laser)
-                                {
-                                    if (laser != null &&
-                                        laser.gameObject.TryGetComponent(out ObjectTransformCurve laserCurve))
-                                    {
-                                        laserCurve.timeMax = Mathf.Clamp(20f - skillLevel, 0, 20);
-                                    }
-                                }
-                            }
-                        }
+                        laserCurve.timeMax = Mathf.Clamp(20f - skillLevel, 0, 20);
                     }
                 }
             }
         }
     }
 
-    [SkillLevelModifier(new string[] {
-        "PrepSupplyDrop", 
-        //"CaptainSkillUsedUp", 
-        //"CaptainSupplyDropDepleted", 
-        //"CaptainSupplyDropHealing", 
-        //"CaptainSupplyDropPlating",
-        //"CaptainSupplyDropEquipmentRestock",
-        //"CaptainSupplyDropHacking"
-    }, typeof(SetupSupplyDrop), typeof(DeployState), typeof(HealZoneMainState), typeof(ShockZoneMainState), typeof(HackingMainState), typeof(HackingInProgressState), typeof(EquipmentRestockMainState))]
+    [SkillLevelModifier([
+        "CAPTAIN_SPECIAL_NAME", 
+        "CAPTAIN_SKILL_USED_UP_NAME", 
+        "CAPTAIN_SKILL_DISCONNECT_NAME", 
+        "CAPTAIN_SUPPLY_HEAL_NAME", 
+        "CAPTAIN_SUPPLY_SHOCKING_NAME",
+        "CAPTAIN_SUPPLY_EQUIPMENT_RESTOCK_NAME",
+        "CAPTAIN_SUPPLY_HACKING_NAME"
+    ], typeof(SetupSupplyDrop), typeof(DeployState), typeof(HealZoneMainState), typeof(ShockZoneMainState), typeof(HackingMainState), typeof(HackingInProgressState), typeof(EquipmentRestockMainState))]
     internal class CaptainSupplyDropHealingSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillEnter(BaseState skillState, int level)
         {
             base.OnSkillEnter(skillState, level);

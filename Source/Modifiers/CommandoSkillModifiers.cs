@@ -12,7 +12,7 @@ using static RoR2.RoR2Content;
 namespace SkillsPlusPlus.Modifiers
 {
 
-    [SkillLevelModifier("CommandoBodyFirePistol", typeof(FirePistol2))]
+    [SkillLevelModifier("COMMANDO_PRIMARY_NAME", typeof(FirePistol2))]
     internal class CommandoFirePistolSkillModifier : SimpleSkillModifier<FirePistol2>
     {
         private float originalDuration = 0;
@@ -34,10 +34,9 @@ namespace SkillsPlusPlus.Modifiers
             FirePistol2.recoilAmplitude = MultScaling(originalRecoil, -0.1f, level);
             FirePistol2.spreadBloomValue = MultScaling(originalSpread, -0.1f, level);
         }
-
     }
 
-    [SkillLevelModifier("CommandoBodyFireFMJ", typeof(FireFMJ))]
+    [SkillLevelModifier("COMMANDO_SECONDARY_NAME", typeof(FireFMJ))]
     internal class CommandoFMJSkillModifier : SimpleSkillModifier<FireFMJ>
     {
         private float originalForwardSpeed = 0;
@@ -57,10 +56,9 @@ namespace SkillsPlusPlus.Modifiers
             skillState.recoilAmplitude = MultScaling(skillState.recoilAmplitude, 0.1f, level);
             skillState.damageCoefficient = MultScaling(skillState.damageCoefficient, 0.3f, level);
         }
-
     }
 
-    [SkillLevelModifier("CommandoBodyFireShotgunBlast", typeof(FireShotgunBlast))]
+    [SkillLevelModifier("COMMANDO_SECONDARY_ALT1_NAME", typeof(FireShotgunBlast))]
     internal class CommandoShotgunBlastSkillModifier : SimpleSkillModifier<FireShotgunBlast>
     {
         public override void OnSkillEnter(FireShotgunBlast skillState, int level)
@@ -72,10 +70,9 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("CommandoBodyRoll", typeof(DodgeState))]
+    [SkillLevelModifier("COMMANDO_UTILITY_NAME", typeof(DodgeState))]
     internal class CommandoRollSkillModifier : SimpleSkillModifier<DodgeState>
     {
-
         public override void OnSkillEnter(DodgeState skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
@@ -88,7 +85,7 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("CommandoSlide", typeof(SlideState))]
+    [SkillLevelModifier("COMMANDO_UTILITY_ALT_NAME", typeof(SlideState))]
     internal class CommandoDiveSkillModifier : SimpleSkillModifier<SlideState>
     {
         public float baseSlideDuration = 0f;
@@ -165,10 +162,9 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier(new string[] { "CommandoBodyBarrage", "Death Blossom" }, typeof(FireBarrage))]
+    [SkillLevelModifier(["COMMANDO_SPECIAL_NAME", "ANCIENTSCEPTER_COMMANDO_BARRAGENAME"], typeof(FireBarrage))]
     internal class CommandoBarrageSkillModifier : SimpleSkillModifier<FireBarrage>
     {
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
@@ -179,13 +175,11 @@ namespace SkillsPlusPlus.Modifiers
             FireBarrage.totalDuration = FireBarrage.baseBulletCount * FireBarrage.baseDurationBetweenShots + 0.3f;
             // FireBarrage.baseDurationBetweenShots = AdditiveScaling(0.12f, -0.01f, level);
         }
-
     }
 
-    [SkillLevelModifier(new string[] { "ThrowGrenade", "Carpet Bomb" }, typeof(ThrowGrenade))]
+    [SkillLevelModifier(["COMMANDO_SPECIAL_ALT1_NAME", "ANCIENTSCEPTER_COMMANDO_GRENADENAME"], typeof(ThrowGrenade))]
     internal class CommandoGrenadeSkillModifier : SimpleSkillModifier<ThrowGrenade>
     {
-
         public override void OnSkillEnter(ThrowGrenade skillState, int level)
         {
             base.OnSkillEnter(skillState, level);

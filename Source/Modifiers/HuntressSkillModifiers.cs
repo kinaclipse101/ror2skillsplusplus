@@ -7,13 +7,13 @@ using EntityStates.Huntress.Weapon;
 using RoR2;
 using RoR2.Skills;
 using RoR2.UI;
+using SkillsPlusPlus.Modifiers;
 using UnityEngine;
 using static RoR2.RoR2Content;
 
-namespace SkillsPlusPlus.Modifiers
+namespace SkillsPlusPlus.Source.Modifiers
 {
-
-    [SkillLevelModifier("HuntressBodyFireSeekingArrow", typeof(FireSeekingArrow))]
+    [SkillLevelModifier("HUNTRESS_PRIMARY_NAME", typeof(FireSeekingArrow))]
     internal class HuntressSeekingArrowSkillModifier : SimpleSkillModifier<FireSeekingArrow>
     {
         public override void OnSkillEnter(FireSeekingArrow skillState, int level)
@@ -38,7 +38,7 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("FireFlurrySeekingArrow", typeof(FireFlurrySeekingArrow))]
+    [SkillLevelModifier("HUNTRESS_PRIMARY_ALT_NAME", typeof(FireFlurrySeekingArrow))]
     internal class HuntressFlurrySkillModifier : SimpleSkillModifier<FireFlurrySeekingArrow>
     {
         public override void OnSkillEnter(FireFlurrySeekingArrow skillState, int level)
@@ -69,14 +69,9 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("HuntressBodyGlaive", typeof(ThrowGlaive))]
+    [SkillLevelModifier("HUNTRESS_SECONDARY_NAME", typeof(ThrowGlaive))]
     internal class HuntressGlaiveSkillModifier : SimpleSkillModifier<ThrowGlaive>
     {
-        static HuntressGlaiveSkillModifier()
-        {
-            // R2API.LanguageAPI.Add("HUNTRESS_SECONDARY_DESCRIPTION", "Throw a seeking glaive that bounces up to <style=cIsDamage>6 (+2)</style> times for <style=cIsDamage>250% damage</style>. Damage increases by <style=cIsDamage>10% (+2.5%)</style> per bounce.");
-        }
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
@@ -87,10 +82,9 @@ namespace SkillsPlusPlus.Modifiers
             ThrowGlaive.glaiveBounceRange = AdditiveScaling(35, 10, level);
             Log.Debug($"Glaive stats - max bounces: {ThrowGlaive.maxBounceCount}, damage coefficient: {ThrowGlaive.damageCoefficientPerBounce}, glaiveBounceRange: {ThrowGlaive.glaiveBounceRange}");
         }
-
     }
 
-    [SkillLevelModifier(new[] { "HuntressBodyBlink", "HuntressBodyMiniBlink" }, typeof(BlinkState), typeof(MiniBlinkState))]
+    [SkillLevelModifier(["HUNTRESS_UTILITY_NAME", "HUNTRESS_UTILITY_ALT1_NAME"], typeof(BlinkState), typeof(MiniBlinkState))]
     internal class HuntressBlinkSkillModifier : BaseSkillModifier
     {
         public override void OnSkillExit(BaseState skillState, int level)
@@ -108,14 +102,9 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier(new[] { "HuntressBodyArrowRain", "Burning Rain" }, typeof(ArrowRain))]
+    [SkillLevelModifier(["HUNTRESS_SPECIAL_NAME", "ANCIENTSCEPTER_HUNTRESS_RAINNAME"], typeof(ArrowRain))]
     internal class HuntressArrowRainSkillModifier : SimpleSkillModifier<ArrowRain>
     {
-        static HuntressArrowRainSkillModifier()
-        {
-            // R2API.LanguageAPI.Add("HUNTRESS_SPECIAL_DESCRIPTION", "<style=cIsUtility>Teleport</style> into the sky. Target a <style=cIsDamage>7.5 unit (+2.5)</style> radius area to rain arrows, <style=cIsUtility>slowing</style> all enemies and dealing <style=cIsDamage>225% (+%25) damage per second</style>.");
-        }
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
@@ -125,10 +114,9 @@ namespace SkillsPlusPlus.Modifiers
 
             ArrowRain.projectilePrefab.transform.localScale = Vector3.one * ArrowRain.arrowRainRadius * 2;
         }
-
     }
 
-    [SkillLevelModifier(new[] { "AimArrowSnipe", "Rabauld" }, typeof(BeginArrowSnipe), typeof(FireArrowSnipe), typeof(AimArrowSnipe))]
+    [SkillLevelModifier(["HUNTRESS_SPECIAL_ALT1_NAME", "ANCIENTSCEPTER_HUNTRESS_BALLISTANAME"], typeof(BeginArrowSnipe), typeof(FireArrowSnipe), typeof(AimArrowSnipe))]
     internal class HuntressSnipeSkillModifier : BaseSkillModifier
     {
         private static readonly float stockImageInterspacing = 18.0f;
@@ -207,9 +195,7 @@ namespace SkillsPlusPlus.Modifiers
                 }
 
                 crosshairController.skillStockSpriteDisplays = stockDisplays;
-
             }
         }
-
     }
 }

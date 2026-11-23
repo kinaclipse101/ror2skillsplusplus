@@ -20,37 +20,28 @@ namespace SkillsPlusPlus.Modifiers
 {
     internal sealed class EngiSkillModifier
     {
-
-        public static Dictionary<DeployableSlot, int> deployableSlotCountBonus = new Dictionary<DeployableSlot, int>();
+        public static Dictionary<DeployableSlot, int> deployableSlotCountBonus = new();
 
         public static int GetDeployableSameSlotBonus(DeployableSlot slot)
         {
-            if (deployableSlotCountBonus.TryGetValue(slot, out int bonusCount))
-            {
-                return bonusCount;
-            }
-            return 0;
+            return deployableSlotCountBonus.GetValueOrDefault(slot, 0);
         }
-
     }
 
-    [SkillLevelModifier("EngiBodyFireGrenade", typeof(ChargeGrenades))]
+    [SkillLevelModifier("ENGI_PRIMARY_NAME", typeof(ChargeGrenades))]
     internal class EngiGrenadesSkillModifier : SimpleSkillModifier<ChargeGrenades>
     {
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
             ChargeGrenades.minGrenadeCount = AdditiveScaling(2, 1, level);
             ChargeGrenades.maxGrenadeCount = AdditiveScaling(8, 4, level);
         }
-
     }
 
-    [SkillLevelModifier("EngiBodyPlaceMine", typeof(FireMines), typeof(MineArmingFull), typeof(MineArmingWeak))]
+    [SkillLevelModifier("ENGI_SECONDARY_NAME", typeof(FireMines), typeof(MineArmingFull), typeof(MineArmingWeak))]
     internal class EngiMineSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
@@ -106,10 +97,9 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("EngiBodyPlaceSpiderMine", typeof(FireSpiderMine), typeof(EntityStates.Engi.SpiderMine.WaitForTarget))]
+    [SkillLevelModifier("ENGI_SPIDERMINE_NAME", typeof(FireSpiderMine), typeof(EntityStates.Engi.SpiderMine.WaitForTarget))]
     internal class EngiSpiderMineSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillEnter(BaseState skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
@@ -150,10 +140,9 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("EngiBodyPlaceBubbleShield", typeof(FireBubbleShield))]
+    [SkillLevelModifier("ENGI_UTILITY_NAME", typeof(FireBubbleShield))]
     internal class EngiBubbleShieldSkillModifier : SimpleSkillModifier<FireBubbleShield>
     {
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
@@ -177,10 +166,9 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("EngiHarpoons", typeof(Paint))]
+    [SkillLevelModifier("ENGI_SKILL_HARPOON_NAME", typeof(Paint))]
     internal class EngiHarpoonsSkillModifier : SimpleSkillModifier<Paint>
     {
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
@@ -192,10 +180,9 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier(new string[] { "EngiBodyPlaceTurret", "TR12-C Gauss Compact" }, typeof(PlaceTurret), typeof(FireGauss))]
+    [SkillLevelModifier(["ENGI_SPECIAL_NAME", "ANCIENTSCEPTER_ENGI_TURRETNAME"], typeof(PlaceTurret), typeof(FireGauss))]
     internal class EngiTurretSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillEnter(BaseState skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
@@ -234,10 +221,9 @@ namespace SkillsPlusPlus.Modifiers
 
     }
 
-    [SkillLevelModifier(new string[] { "EngiBodyPlaceWalkerTurret", "TR58-C Carbonizer Mini" }, typeof(PlaceWalkerTurret), typeof(FireBeam))]
+    [SkillLevelModifier(["ENGI_SPECIAL_ALT1_NAME", "ANCIENTSCEPTER_ENGI_WALKERNAME"], typeof(PlaceWalkerTurret), typeof(FireBeam))]
     internal class EngiWalkerTurretSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillEnter(BaseState skillState, int level)
         {
             base.OnSkillEnter(skillState, level);

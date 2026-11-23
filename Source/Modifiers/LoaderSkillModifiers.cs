@@ -1,21 +1,17 @@
-﻿using RoR2;
+﻿using EntityStates;
+using EntityStates.Loader;
+using RoR2;
 using RoR2.Projectile;
 using RoR2.Skills;
-
-using EntityStates;
-using EntityStates.Loader;
-
-using UnityEngine;
 using RoR2.UI;
-using SkillsPlusPlus.Source;
+using SkillsPlusPlus.Modifiers;
+using UnityEngine;
 
-namespace SkillsPlusPlus.Modifiers
+namespace SkillsPlusPlus.Source.Modifiers
 {
-
-    [SkillLevelModifier("SwingFist", typeof(SwingComboFist))]
+    [SkillLevelModifier("LOADER_PRIMARY_NAME", typeof(SwingComboFist))]
     internal class LoaderKnucklesSkillModifier : SimpleSkillModifier<SwingComboFist>
     {
-
         public override void OnSkillEnter(SwingComboFist skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
@@ -24,7 +20,7 @@ namespace SkillsPlusPlus.Modifiers
         }
     }
 
-    [SkillLevelModifier("GroundSlam", typeof(GroundSlam), typeof(PreGroundSlam))]
+    [SkillLevelModifier("LOADER_SPECIAL_ALT_NAME", typeof(GroundSlam), typeof(PreGroundSlam))]
     internal class LoaderThunderSlamSkillModifier : BaseSkillModifier
     {
         private static float baseUpwardVelocity = 0f;
@@ -83,14 +79,12 @@ namespace SkillsPlusPlus.Modifiers
             base.SetupSkill();
 
             On.EntityStates.Loader.GroundSlam.FixedUpdate += GroundSlamFixedUpdate;
-
         }
     }
 
-    [SkillLevelModifier("FireHook", typeof(FireHook))]
+    [SkillLevelModifier("LOADER_SECONDARY_NAME", typeof(FireHook))]
     internal class LoaderHookSkillModifier : SimpleSkillModifier<FireHook>
     {
-
         public override void OnSkillEnter(FireHook skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
@@ -106,12 +100,6 @@ namespace SkillsPlusPlus.Modifiers
             }
         }
 
-        public override void OnSkillExit(FireHook skillState, int level)
-        {
-            base.OnSkillExit(skillState, level);
-
-        }
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
@@ -120,10 +108,9 @@ namespace SkillsPlusPlus.Modifiers
                 hookCrosshairController.range = MultScaling(80, 0.30f, level);
             }
         }
-
     }
 
-    [SkillLevelModifier("FireYankHook", typeof(FireYankHook))]
+    [SkillLevelModifier("LOADER_YANKHOOK_NAME", typeof(FireYankHook))]
     internal class LoaderYankHookSkillModifier : SimpleSkillModifier<FireYankHook>
     {
         private static float baseDamageCoeff = 0f;
@@ -136,6 +123,7 @@ namespace SkillsPlusPlus.Modifiers
                 grappleController.maxTravelDistance = MultScaling(80, 0.15f, level);
             }
         }
+        
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
@@ -151,13 +139,11 @@ namespace SkillsPlusPlus.Modifiers
 
             FireYankHook.damageCoefficient = MultScaling(baseDamageCoeff, 0.20f, level);
         }
-
     }
 
-    [SkillLevelModifier(new[] { "ChargeFist", "Megaton Punch" }, typeof(ChargeFist), typeof(SwingChargedFist))]
+    [SkillLevelModifier(["LOADER_UTILITY_NAME", "ANCIENTSCEPTER_LOADER_CHARGEFISTNAME"], typeof(ChargeFist), typeof(SwingChargedFist))]
     internal class LoaderChargeFistSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillEnter(BaseState baseState, int level)
         {
             base.OnSkillEnter(baseState, level);
@@ -181,13 +167,11 @@ namespace SkillsPlusPlus.Modifiers
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
             BaseSwingChargedFist.velocityDamageCoefficient = MultScaling(0.3f, 0.20f, level);
         }
-
     }
 
-    [SkillLevelModifier(new[] { "ChargeZapFist", "Thundercrash" }, typeof(ChargeZapFist), typeof(SwingZapFist))]
+    [SkillLevelModifier(["LOADER_UTILITY_ALT1_NAME", "ANCIENTSCEPTER_SCEPLOADER_CHARGEZAPFISTNAME"], typeof(ChargeZapFist), typeof(SwingZapFist))]
     internal class LoaderChargeZapFistSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillEnter(BaseState baseState, int level)
         {
             base.OnSkillEnter(baseState, level);
@@ -213,24 +197,12 @@ namespace SkillsPlusPlus.Modifiers
                 proximityBeamController.attackRange = MultScaling(40, 0.20f, level);
             }
         }
-
     }
 
     // duplicate skill name
-    [SkillLevelModifier("ThrowPylon", typeof(ThrowPylon))]
+    [SkillLevelModifier("LOADER_SPECIAL_NAME", typeof(ThrowPylon))]
     internal class LoaderThrowPylonSkillModifier : SimpleSkillModifier<ThrowPylon>
     {
-
-        public override void SetupSkill()
-        {
-            base.SetupSkill();
-        }
-
-        public override void OnSkillEnter(ThrowPylon skillState, int level)
-        {
-            base.OnSkillEnter(skillState, level);
-        }
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
@@ -244,6 +216,5 @@ namespace SkillsPlusPlus.Modifiers
                 proximityBeamController.attackInterval = MultScaling(1.0f, -0.20f, level);
             }
         }
-
     }
 }

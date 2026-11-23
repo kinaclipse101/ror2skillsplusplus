@@ -15,7 +15,7 @@ using GlobalEventManager = On.RoR2.GlobalEventManager;
 
 namespace SkillsPlusPlus.Source.Modifiers
 {
-    [SkillLevelModifier(["FireHandBeam", "ChargeHandBeam", "FireCorruptBeam", "ChargeCorruptHandBeam"], typeof(FireHandBeam), typeof(ChargeHandBeam), typeof(FireCorruptHandBeam), typeof(ChargeCorruptHandBeam))]
+    [SkillLevelModifier(["VOIDSURVIVOR_PRIMARY_NAME"], typeof(FireHandBeam), typeof(ChargeHandBeam), typeof(FireCorruptHandBeam), typeof(ChargeCorruptHandBeam))]
     class VoidFiendHandBeamSkillModifier : BaseSkillModifier 
     {
         CharacterBody surv;
@@ -122,12 +122,10 @@ namespace SkillsPlusPlus.Source.Modifiers
         }
     }
 
-    [SkillLevelModifier("ChargeMegaBlaster", typeof(ChargeMegaBlaster), typeof(FireMegaBlasterBase), // flood
-        typeof(FireMegaBlasterBig), typeof(FireMegaBlasterSmall))]
+    //flood ,,.
+    [SkillLevelModifier("VOIDSURVIVOR_SECONDARY_NAME", typeof(ChargeMegaBlaster), typeof(FireMegaBlasterBase), typeof(FireMegaBlasterBig), typeof(FireMegaBlasterSmall))]
     internal class VoidFiendChargeMegaSkillModifier : BaseSkillModifier
     {
-
-
         public override void OnSkillEnter(BaseState skillState, int level)
         {
             if (skillState is ChargeMegaBlaster chargeMegaBlaster)
@@ -151,10 +149,10 @@ namespace SkillsPlusPlus.Source.Modifiers
                 Logger.Debug("FireMegaBlasterSmall");
             }*/
         }
-
     }
 
-    [SkillLevelModifier("FireCorruptDisk", typeof(FireCorruptDisks))] // corrupt flood
+    // corrupt flood .,,.
+    [SkillLevelModifier("VOIDSURVIVOR_SECONDARY_NAME", typeof(FireCorruptDisks))] 
     internal class VoidFiendFireCorruptDiskSkillModifier : SimpleSkillModifier<FireCorruptDisks>
     {
         private CharacterBody surv;
@@ -200,7 +198,7 @@ namespace SkillsPlusPlus.Source.Modifiers
         }
     }
 
-    [SkillLevelModifier("VoidBlinkUp", typeof(VoidBlinkUp))]
+    [SkillLevelModifier("VOIDSURVIVOR_UTILITY_NAME", typeof(VoidBlinkUp))]
     internal class VoidFiendVoidBlinkUpSkillModifier : SimpleSkillModifier<VoidBlinkUp>
     {
         private BuffDef VoidFiendArmorBuff;
@@ -248,7 +246,7 @@ namespace SkillsPlusPlus.Source.Modifiers
         }
     }
 
-    [SkillLevelModifier("VoidBlinkDown", typeof(VoidBlinkDown))]
+    [SkillLevelModifier("VOIDSURVIVOR_UTILITY_NAME", typeof(VoidBlinkDown))]
     internal class VoidFiendVoidBlinkDownSkillModifier : SimpleSkillModifier<VoidBlinkDown>
     {
         private BuffDef VoidFiendDamageSpeedBuff;
@@ -258,11 +256,12 @@ namespace SkillsPlusPlus.Source.Modifiers
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
             surv = characterBodyLevelup;
         }
+        
         public override void OnSkillExit(VoidBlinkDown skillState, int level)
         {
             Log.Debug("VoidBlinkDown");
             if (level > 0)
-                surv.AddTimedBuff(VoidFiendDamageSpeedBuff, level + 1);
+                skillState.characterBody.AddTimedBuff(VoidFiendDamageSpeedBuff, level + 1);
         }
 
         public override void SetupSkill()
@@ -295,10 +294,9 @@ namespace SkillsPlusPlus.Source.Modifiers
         }
     }
 
-    [SkillLevelModifier("CrushCorruption", typeof(CrushCorruption), typeof(ChargeCrushCorruption))]
+    [SkillLevelModifier("VOIDSURVIVOR_SPECIAL_NAME", typeof(CrushCorruption), typeof(ChargeCrushCorruption))]
     internal class VoidFiendCrushCorruptionSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillEnter(BaseState skillState, int level)
         {
             if (skillState is CrushCorruption crushCorruption)
@@ -309,7 +307,7 @@ namespace SkillsPlusPlus.Source.Modifiers
         }
     }
 
-    [SkillLevelModifier("CrushHealth", typeof(CrushHealth), typeof(ChargeCrushHealth))]
+    [SkillLevelModifier("VOIDSURVIVOR_SPECIAL_NAME", typeof(CrushHealth), typeof(ChargeCrushHealth))]
     internal class VoidFiendCrushHealthSkillModifier : BaseSkillModifier
     {
         private CharacterBody surv;

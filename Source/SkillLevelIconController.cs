@@ -34,6 +34,7 @@ namespace SkillsPlusPlus
             this.CanBuyPanel.name = "CanBuyBorderPanel";
             CanBuyPanel.transform.SetSiblingIndex(1);
             CanBuyBorderRenderer = this.CanBuyPanel.GetComponent<CanvasRenderer>();
+            CanBuyBorderRenderer?.SetColor(Color.yellow);
 
             // create the upgrade level label
             {
@@ -125,13 +126,21 @@ namespace SkillsPlusPlus
             }
         }
 
+        private Player inputPlayer;
+        private InputBankTest inputBank;
+        private GenericSkill targetSkill;
+        
         private void OnEnable()
         {
-            if (!skillIcon) return;
+            inputPlayer ??= skillIcon?.playerCharacterMasterController?.networkUser?.localUser?.inputPlayer;
+            inputBank ??= skillIcon?.playerCharacterMasterController?.body?.inputBank;
+            targetSkill ??= skillIcon?.targetSkill;
             
-            if (skillIcon.targetSkill)  //Prevents errors when morphing to Heretic
+            if (!skillIcon) return;
+
+            if (targetSkill)  //Prevents errors when morphing to Heretic
             {
-                skillUpgrades = SkillUpgradeHelper.GetOrAddMasterSkillUpgrade(skillIcon.playerCharacterMasterController.master, skillIcon.targetSkill);
+                skillUpgrades = SkillUpgradeHelper.GetOrAddMasterSkillUpgrade(skillIcon.playerCharacterMasterController.master, targetSkill);
             }
         }
 
@@ -139,23 +148,22 @@ namespace SkillsPlusPlus
         {
             if (skillUpgrades != null)
             {
+                //captain beacons grrr .,.,
+                if (targetSkill != skillIcon.targetSkill)
+                {
+                    targetSkill = skillIcon.targetSkill;
+                    skillUpgrades = SkillUpgradeHelper.GetOrAddMasterSkillUpgrade(skillIcon.playerCharacterMasterController.master, targetSkill);
+                }
+                
                 var canBuySkill = skillUpgrades.CanUpgradeSkill();
                 if (levelTextMesh)
                 {
                     levelTextMesh.text = skillUpgrades.skillLevel > 0 && skillIcon.targetSkill ? skillUpgrades.skillLevel.ToString() : null;
                 }
                 CanBuyBorderRenderer.gameObject.SetActive(canBuySkill);
-                CanBuyBorderRenderer.SetColor(Color.yellow);
-
-                var masterController = skillIcon?.playerCharacterMasterController;
-                if (masterController)
+                
+                if (inputPlayer != null && inputBank)
                 {
-                    LocalUser localUser = masterController?.networkUser?.localUser;
-                    Player inputPlayer = localUser?.inputPlayer;
-                    
-                    if (!skillIcon || inputPlayer == null) return;
-                    InputBankTest inputBank = masterController.body.inputBank;
-
                     SkillSlot skillSlot = skillIcon.targetSkillSlot;
                     int skillAction = skillSlot switch
                     {
@@ -169,14 +177,13 @@ namespace SkillsPlusPlus
                     UpgradeButton.SetActive(canBuySkill && (inputBank.GetButtonState(SkillOptions.hotkey).down || inputPlayer.GetButton(RewiredConsts.Action.Info)));
                     if (skillAction != 0 && inputPlayer.GetButtonDown(skillAction) && inputBank.GetButtonState(SkillOptions.hotkey).down)
                     {
-                        this.OnBuySkill();
+                        OnBuySkill();
                     }
                 }
             }
             else
             {
                 Log.Debug("skill upgrades null");
-                //skillUpgrades = SkillUpgradeHelper.GetOrAddMasterSkillUpgrade(skillIcon.playerCharacterMasterController.master, skillIcon.targetSkill);
             }
         }
 
@@ -184,7 +191,7 @@ namespace SkillsPlusPlus
         {
             if (skillUpgrades != null)
             {
-                skillUpgrades.skillPointsController.CmdOnBuySkill(skillUpgrades);
+                skillUpgrades.skillPointsController.CmdOnBuySkill(skillUpgrades, skillIcon.targetSkill);
             }
         }
     }

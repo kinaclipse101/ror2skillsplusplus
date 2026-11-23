@@ -14,7 +14,7 @@ namespace SkillsPlusPlus.Modifiers
 {
     internal class LunarModifiers
     {
-        [SkillLevelModifier(new string[] { "LunarPrimaryReplacement", "HungeringGaze" }, typeof(FireLunarNeedle))]
+        [SkillLevelModifier("SKILL_LUNAR_PRIMARY_REPLACEMENT_NAME", typeof(FireLunarNeedle))]
         internal class VisionsOfHeresySkillModifier : SimpleSkillModifier<FireLunarNeedle>
         {
             public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
@@ -29,14 +29,9 @@ namespace SkillsPlusPlus.Modifiers
             {
                 args.baseDamageAdd += (level * 0.25f);
             }
-
-            public override void SetupSkill()
-            {
-                base.SetupSkill();
-            }
         }
 
-        [SkillLevelModifier(new string[] { "LunarSecondaryReplacement", "SlicingMaelstrom" }, typeof(ThrowLunarSecondary), typeof(ChargeLunarSecondary))]
+        [SkillLevelModifier("SKILL_LUNAR_SECONDARY_REPLACEMENT_NAME", typeof(ThrowLunarSecondary), typeof(ChargeLunarSecondary))]
         internal class HooksOfHeresySkillModifier : BaseSkillModifier
         {
             private static float baseMaelstromScale = 0f;
@@ -84,14 +79,9 @@ namespace SkillsPlusPlus.Modifiers
             {
                 args.armorAdd += (level * 3);
             }
-
-            public override void SetupSkill()
-            {
-                base.SetupSkill();
-            }
         }
 
-        [SkillLevelModifier(new string[] { "LunarUtilityReplacement", "Shadowfade" }, typeof(GhostUtilitySkillState))]
+        [SkillLevelModifier("SKILL_LUNAR_UTILITY_REPLACEMENT_NAME", typeof(GhostUtilitySkillState))]
         internal class StridesOfHeresySkillModifier : SimpleSkillModifier<GhostUtilitySkillState>
         {
             public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
@@ -106,14 +96,9 @@ namespace SkillsPlusPlus.Modifiers
             {
                 args.healthMultAdd += (level * 0.03f);
             }
-
-            public override void SetupSkill()
-            {
-                base.SetupSkill();
-            }
         }
 
-        [SkillLevelModifier(new string[] { "LunarDetonatorSpecialReplacement", "Ruin" }, typeof(LunarDetonatorSkill), typeof(Detonate))]
+        [SkillLevelModifier(["SKILL_LUNAR_SPECIAL_REPLACEMENT_NAME", "ANCIENTSCEPTER_LUNARREPLACEMENT_DETONATENAME"], typeof(LunarDetonatorSkill), typeof(Detonate))]
         internal class HeartOfHeresySkillModifier : BaseSkillModifier
         {
             private static float baseDamageCoefficient = 0f;
@@ -135,11 +120,6 @@ namespace SkillsPlusPlus.Modifiers
             public override void RecalcStats(int level, CharacterBody sender, StatHookEventArgs args)
             {
                 args.baseAttackSpeedAdd += (level * 0.25f);
-            }
-
-            public override void OnSkillEnter(BaseState skillState, int level)
-            {
-                base.OnSkillEnter(skillState, level);
             }
 
             public static void LunarDetonatorPassiveAttachment_OnDamageDealt(On.RoR2.LunarDetonatorPassiveAttachment.DamageListener.orig_OnDamageDealtServer orig, MonoBehaviour self, DamageReport damageReport)

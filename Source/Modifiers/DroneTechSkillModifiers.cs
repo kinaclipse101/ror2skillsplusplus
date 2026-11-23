@@ -8,7 +8,7 @@ using SkillsPlusPlus.Modifiers;
 
 namespace SkillsPlusPlus.Source.Modifiers
 {
-    /*[SkillLevelModifier("FireNanoPistol", typeof(FireNanoPistol))]
+    [SkillLevelModifier("DRONETECH_PRIMARY_NAME", typeof(FireNanoPistol))]
     class DroneTechFireNanoPistolSkillModifier : BaseSkillModifier
     {
         public override void OnSkillLeveledUp(int level, CharacterBody characterBody, SkillDef skillDef)
@@ -21,15 +21,14 @@ namespace SkillsPlusPlus.Source.Modifiers
             base.OnSkillEnter(skillState, level);
             if (skillState is FireNanoPistol)
             {
-                Logger.Debug("FireNanoPistol");
+                Log.Debug("FireNanoPistol");
             }
         }
     }
 
-    [SkillLevelModifier("Command", typeof(Command), typeof(CommandCarry))]
+    [SkillLevelModifier("DRONETECH_SECONDARY_NAME", typeof(Command), typeof(CommandCarry))]
     class DroneTechCommandSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBody, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBody, skillDef);
@@ -41,15 +40,14 @@ namespace SkillsPlusPlus.Source.Modifiers
 
             if (skillState is Command)
             {
-                Logger.Debug("Command");
+                Log.Debug("Command");
             }
         }
     }
 
-    [SkillLevelModifier("CommandHeadbutt", typeof(CommandHeadbutt))]
+    [SkillLevelModifier("DRONETECH_SECONDARY_ALT_NAME", typeof(CommandHeadbutt))]
     class DroneTechCommandHeadbuttSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBody, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBody, skillDef);
@@ -61,15 +59,14 @@ namespace SkillsPlusPlus.Source.Modifiers
 
             if (skillState is CommandHeadbutt)
             {
-                Logger.Debug("CommandHeadbutt");
+                Log.Debug("CommandHeadbutt");
             }
         }
     }
 
-    [SkillLevelModifier("DroneLeap", typeof(DroneLeap), typeof(DroneLeapRepeat))]
+    [SkillLevelModifier("DRONETECH_UTILITY_NAME", typeof(DroneLeap), typeof(DroneLeapRepeat))]
     class DroneTechDroneLeapSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBody, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBody, skillDef);
@@ -81,16 +78,16 @@ namespace SkillsPlusPlus.Source.Modifiers
 
             if (skillState is DroneLeap)
             {
-                Logger.Debug("DroneLeap");
+                Log.Debug("DroneLeap");
             } 
             if (skillState is DroneLeapRepeat)
             {
-                Logger.Debug("DroneLeapRepeat");
+                Log.Debug("DroneLeapRepeat");
             } 
         }
     }
 
-    [SkillLevelModifier("CommandShieldFormation", typeof(CommandShield))]
+    [SkillLevelModifier("DRONETECH_UTILITY_ALT_NAME", typeof(CommandShield))]
     class DroneTechCommandShieldFormationSkillModifier : BaseSkillModifier
     {
 
@@ -105,15 +102,14 @@ namespace SkillsPlusPlus.Source.Modifiers
 
             if (skillState is CommandShield)
             {
-                Logger.Debug("CommandShield");
+                Log.Debug("CommandShield");
             } 
         }
     }
     
-    [SkillLevelModifier("DroneBall", typeof(ThrowDroneBall))]
+    [SkillLevelModifier("DRONETECH_SPECIAL_NAME", typeof(ThrowDroneBall))]
     class DroneTechDroneBallSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBody, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBody, skillDef);
@@ -125,15 +121,14 @@ namespace SkillsPlusPlus.Source.Modifiers
 
             if (skillState is ThrowDroneBall)
             {
-                Logger.Debug("ThrowDroneBall");
+                Log.Debug("ThrowDroneBall");
             } 
         }
     }
     
-    [SkillLevelModifier("DroneBallShootable", typeof(ThrowDroneBallShootable))]
+    [SkillLevelModifier("DRONETECH_SPECIAL_ALT_NAME", typeof(ThrowDroneBallShootable))]
     class DroneTechDroneBallShootableSkillModifier : BaseSkillModifier
     {
-
         public override void OnSkillLeveledUp(int level, CharacterBody characterBody, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBody, skillDef);
@@ -145,8 +140,8 @@ namespace SkillsPlusPlus.Source.Modifiers
 
             if (skillState is ThrowDroneBallShootable)
             {
-                Logger.Debug("ThrowDroneBallShootable");
+                Log.Debug("ThrowDroneBallShootable");
             } 
         }
-    }*/
+    }
 }

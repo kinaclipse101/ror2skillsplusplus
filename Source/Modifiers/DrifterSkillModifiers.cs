@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace SkillsPlusPlus.Source.Modifiers
 {
-    /*[SkillLevelModifier(new [] {"BluntForce", "Bludgeon"}, typeof(BluntForceBase), typeof(BluntForceEntry), typeof(BluntForceHit1), typeof(BluntForceHit2), typeof(BluntForceHit3), typeof(BluntForceTornado))]
+    [SkillLevelModifier(["DRIFTER_PRIMARY_NAME", "DRIFTER_UTILITY_C_NAME"], typeof(BluntForceBase), typeof(BluntForceEntry), typeof(BluntForceHit1), typeof(BluntForceHit2), typeof(BluntForceHit3), typeof(BluntForceTornado))]
     class DrifterBluntForceSkillModifier : BaseSkillModifier
     {
         public override void OnSkillLeveledUp(int level, CharacterBody characterBody, SkillDef skillDef)
@@ -25,24 +25,24 @@ namespace SkillsPlusPlus.Source.Modifiers
             base.OnSkillEnter(skillState, level);
             if (skillState is BluntForceBase)
             {
-                Logger.Debug("BluntForceBase");
+                Log.Debug("BluntForceBase");
             }
             switch (skillState)
             {
                 case BluntForceHit1 _:
-                    Logger.Debug("BluntForceHit1");
+                    Log.Debug("BluntForceHit1");
                     break;
                 case BluntForceHit2 _:
-                    Logger.Debug("BluntForceHit2");
+                    Log.Debug("BluntForceHit2");
                     break;
                 case BluntForceHit3 _:
-                    Logger.Debug("BluntForceHit3");
+                    Log.Debug("BluntForceHit3");
                     break;
             }
         }
     }
 
-    [SkillLevelModifier("Cleanup", typeof(Cleanup))]
+    [SkillLevelModifier("DRIFTER_SECONDARY_NAME", typeof(Cleanup))]
     class DrifterCleanupSkillModifier : BaseSkillModifier
     {
 
@@ -57,12 +57,12 @@ namespace SkillsPlusPlus.Source.Modifiers
 
             if (skillState is Cleanup)
             {
-                Logger.Debug("Cleanup");
+                Log.Debug("Cleanup");
             }
         }
     }
 
-    [SkillLevelModifier("JunkCube", typeof(JunkCube))]
+    [SkillLevelModifier("DRIFTER_SECONDARY_ALT_NAME", typeof(JunkCube))]
     class DrifterJunkCubeSkillModifier : BaseSkillModifier
     {
 
@@ -77,12 +77,12 @@ namespace SkillsPlusPlus.Source.Modifiers
 
             if (skillState is JunkCube)
             {
-                Logger.Debug("JunkCube");
+                Log.Debug("JunkCube");
             }
         }
     }
 
-    [SkillLevelModifier(new string[] {"Repossess", "Discard"}, typeof(Repossess), typeof(AimRepossess), typeof(RepossessBullseyeSearch))]
+    [SkillLevelModifier(["DRIFTER_UTILITY_NAME", "DRIFTER_UTILITY_B_NAME"], typeof(Repossess), typeof(AimRepossess), typeof(RepossessBullseyeSearch))]
     class DrifterRepossessSkillModifier : BaseSkillModifier
     {
 
@@ -97,16 +97,16 @@ namespace SkillsPlusPlus.Source.Modifiers
 
             if (skillState is Repossess)
             {
-                Logger.Debug("Repossess");
+                Log.Debug("Repossess");
             } 
             else if (skillState is AimRepossess)
             {
-                Logger.Debug("AimRepossess");
+                Log.Debug("AimRepossess");
             } 
         }
     }
 
-    [SkillLevelModifier("TornadoSlam", typeof(TornadoSlam), typeof(ChargeTornadoSlam))]
+    [SkillLevelModifier("DRIFTER_UTILITY_ALT_NAME", typeof(TornadoSlam), typeof(ChargeTornadoSlam))]
     class DrifterTornadoSlamSkillModifier : BaseSkillModifier
     {
 
@@ -121,24 +121,18 @@ namespace SkillsPlusPlus.Source.Modifiers
 
             if (skillState is TornadoSlam)
             {
-                Logger.Debug("TornadoSlam");
+                Log.Debug("TornadoSlam");
             } 
             else if (skillState is ChargeTornadoSlam)
             {
-                Logger.Debug("ChargeTornadoSlam");
+                Log.Debug("ChargeTornadoSlam");
             }
         }
-    }*/
+    }
     
-    [SkillLevelModifier("Salvage", typeof(Salvage))]
+    [SkillLevelModifier("DRIFTER_SPECIAL_NAME", typeof(Salvage))]
     class DrifterSalvageSkillModifier : BaseSkillModifier
     {
-
-        public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
-        {
-            base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-        }
-
         public override void SetupSkill()
         {
             base.SetupSkill();
@@ -160,8 +154,9 @@ namespace SkillsPlusPlus.Source.Modifiers
             }
             else 
             {
-                Log.Error(il.Method.Name + " IL Hook failed!");
+                Log.Error(il.Method.Name + " S++ IL Hook failed!");
             }
+            
             Log.Debug("salvage = " + il.ToString());
         }
 
@@ -169,27 +164,19 @@ namespace SkillsPlusPlus.Source.Modifiers
         {
             base.OnSkillEnter(skillState, level);
 
-            if (skillState is Salvage salvage)
-            {
-                Log.Debug("Salvage");
-                salvage.itemsToDrop = AdditiveScaling(4, 1, level);
-                salvage.delayBetweenDrops = (salvage.delayBetweenDrops * 4) / salvage.itemsToDrop;
-                Log.Debug("Salvage delay = " + salvage.delayBetweenDrops);
-                //salvage.delayBetweenDrops = AdditiveScaling(salvage.itemsToDrop, 1, level);
-            } 
+            if (skillState is not Salvage salvage) return;
             
+            Log.Debug("Salvage");
+            salvage.itemsToDrop = AdditiveScaling(4, 1, level);
+            salvage.delayBetweenDrops = (salvage.delayBetweenDrops * 4) / salvage.itemsToDrop;
+            Log.Debug("Salvage delay = " + salvage.delayBetweenDrops);
+            //salvage.delayBetweenDrops = AdditiveScaling(salvage.itemsToDrop, 1, level);
         }
     }
     
-    [SkillLevelModifier("Tinker", typeof(CastTinker))]
+    [SkillLevelModifier("DRIFTER_SPECIAL_ALT_NAME", typeof(CastTinker))]
     class DrifterTinkerSkillModifier : BaseSkillModifier
     {
-
-        public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
-        {
-            base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
-        }
-
         public override void SetupSkill()
         {
             base.SetupSkill();
@@ -212,22 +199,14 @@ namespace SkillsPlusPlus.Source.Modifiers
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate<Func<RoR2.Projectile.TinkerProjectile, float>>((tinkerProjectile) =>
                     {
-                        int level = 0;
+                        int level = GetSkillLevel(tinkerProjectile.ownerBody);
                         float newdecay = 1;
-                        /*SkillUpgrade[] skillUpgrades = tinkerProjectile.ownerBody.gameObject.GetComponents<SkillUpgrade>();
-                        foreach (var upgrade in skillUpgrades)
-                        {
-                            Log.Debug(upgrade.targetBaseSkillName);
-                            if (upgrade.targetBaseSkillName == "Tinker")
-                            {
-                                level = upgrade.skillLevel;
-                            }
-                        }*/
-
+                        
                         if (level >= 2)
                         {
                             newdecay += 0.5f/2f * (level - level % 2);
                         }
+                        
                         Log.Debug("decayvalue time = " + newdecay);
                         return newdecay;
                     }
@@ -249,22 +228,14 @@ namespace SkillsPlusPlus.Source.Modifiers
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate<Func<RoR2.Projectile.TinkerProjectile, float>>((tinkerProjectile) =>
                     {
-                        int level = 0;
+                        int level = GetSkillLevel(tinkerProjectile.ownerBody);
                         float newdecay = 1;
-                        /*SkillUpgrade[] skillUpgrades = tinkerProjectile.ownerBody.gameObject.GetComponents<SkillUpgrade>();
-                        foreach (var upgrade in skillUpgrades)
-                        {
-                            Log.Debug(upgrade.targetBaseSkillName);
-                            if (upgrade.targetBaseSkillName == "Tinker")
-                            {
-                                level = upgrade.skillLevel;
-                            }
-                        }*/
 
                         if (level >= 2)
                         {
                             newdecay += 0.5f/2f * (level - level % 2);
                         }
+                        
                         Log.Debug("decayvalue else time = " + newdecay);
                         return newdecay;
                     }
@@ -272,10 +243,8 @@ namespace SkillsPlusPlus.Source.Modifiers
             }
             else 
             {
-                Log.Error(il.Method.Name + " IL Hook failed!");
+                Log.Error(il.Method.Name + " S++ IL Hook failed!");
             }
-            
-            Log.Debug("managemonster = " + il.ToString());
         }
 
         private void TinkerProjectileOnManageMonster(ILContext il)
@@ -293,17 +262,8 @@ namespace SkillsPlusPlus.Source.Modifiers
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate<Func<RoR2.Projectile.TinkerProjectile, float>>((tinkerProjectile) =>
                     {
-                        int level = 0;
-                        /*SkillUpgrade[] skillUpgrades = tinkerProjectile.ownerBody.gameObject.GetComponents<SkillUpgrade>();
-                        foreach (var upgrade in skillUpgrades)
-                        {
-                            Log.Debug(upgrade.targetBaseSkillName);
-                            if (upgrade.targetBaseSkillName == "Tinker")
-                            {
-                                level = upgrade.skillLevel;
-                            }
-                        }*/
-
+                        int level = GetSkillLevel(tinkerProjectile.ownerBody);
+                        
                         Log.Debug("debuff time = " + MultScaling(4f, 0.25f, level));
                         return MultScaling(4f, 0.25f, level);
                     }
@@ -311,7 +271,7 @@ namespace SkillsPlusPlus.Source.Modifiers
             }
             else 
             {
-                Log.Error(il.Method.Name + " IL Hook failed!");
+                Log.Error(il.Method.Name + " S++ IL Hook failed!");
             }
             
             Log.Debug("managemonster = " + il.ToString());
@@ -321,17 +281,15 @@ namespace SkillsPlusPlus.Source.Modifiers
         {
             base.OnSkillEnter(skillState, level);
 
-            if (skillState is CastTinker tinker)
-            {
-                Log.Debug("CastTinker");
+            if (skillState is not CastTinker tinker) return;
+            
+            Log.Debug("CastTinker");
                 
-                tinker.projectilePrefab.transform.localScale = new Vector3(
-                    MultScaling(1, .25f, level),
-                    MultScaling(1, .25f, level),
-                    MultScaling(1, .25f, level));
-                Log.Debug("scale = " + tinker.projectilePrefab.transform.localScale);
-                //tinker.
-            } 
+            tinker.projectilePrefab.transform.localScale = new Vector3(
+                MultScaling(1, .25f, level),
+                MultScaling(1, .25f, level),
+                MultScaling(1, .25f, level));
+            Log.Debug("scale = " + tinker.projectilePrefab.transform.localScale);
         }
     }
 }
