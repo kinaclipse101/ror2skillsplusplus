@@ -141,6 +141,12 @@ namespace SkillsPlusPlus
             if (targetSkill)  //Prevents errors when morphing to Heretic
             {
                 skillUpgrades = SkillUpgradeHelper.GetOrAddMasterSkillUpgrade(skillIcon.playerCharacterMasterController.master, targetSkill);
+                targetSkill.onSkillChanged += skill =>
+                {
+                    skillUpgrades =
+                        SkillUpgradeHelper.GetOrAddMasterSkillUpgrade(skillIcon.playerCharacterMasterController.master,
+                            targetSkill);
+                };
             }
         }
 

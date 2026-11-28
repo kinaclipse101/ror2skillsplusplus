@@ -117,10 +117,6 @@ namespace SkillsPlusPlus.Source.Modifiers
     {
         public static BuffDef ChefAttackSpeedBuff;
 
-        private DamageTypeCombo SearDamageTypeCombo = new(DamageType.IgniteOnHit, DamageTypeExtended.ChefSource, DamageSource.Secondary);
-        
-        private DamageTypeCombo BoostedSearDamageTypeCombo = new(DamageType.IgniteOnHit, DamageTypeExtended.ChefSource | DamageTypeExtended.IgniteChefOilBoosted, DamageSource.Secondary);
-
         public override void OnSkillEnter(BaseState skillState, int level)
         {
             base.OnSkillEnter(skillState, level);
@@ -155,12 +151,38 @@ namespace SkillsPlusPlus.Source.Modifiers
             base.SetupSkill();
 
             RegisterChefAttackSpeedBuff();
+            IL.EntityStates.Chef.Sear.HandlePrimaryAttack += SearOnHandlePrimaryAttack;
+        }
+
+        private void SearOnHandlePrimaryAttack(ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(MoveType.Before,
+                    x => x.MatchLdcR4(1),
+                    x => x.MatchLdfld<Sear>(nameof(Sear.tickFrequency))
+                ))
+            {
+                c.Index++;
+                c.Remove();
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Func<Sear, float>>((sear) =>
+                    {
+                        int skillLevel = GetSkillLevel(sear.chefController.characterBody);
+                        if (skillLevel <= 0) return Sear.tickFrequency;
+                        return Sear.tickFrequency * MultScaling(Sear.tickFrequency, -0.15f, skillLevel);
+                    }
+                );
+            }
+            else 
+            {
+                Log.Error(il.Method.Name + " S++ IL Hook failed!");
+            }
         }
 
         public override void TakeDamagePost(int level, RoR2.HealthComponent self, DamageInfo damageInfo, CharacterBody attackerBody)
         {
-            var damagetypecheck = (damageInfo.damageType == SearDamageTypeCombo || damageInfo.damageType == BoostedSearDamageTypeCombo);
-            if (!damagetypecheck) return; // no clue if this actually does anything "preformance" wise since its mostly here to prevent it from calling getcomponent every take damage ,..,,.
+            var damagetypecheck = (damageInfo.damageType.damageSource == DamageSource.Secondary && damageInfo.damageType.damageType == DamageType.IgniteOnHit);
+            if (!damagetypecheck) return; 
             
             if (attackerBody.GetBuffCount(ChefAttackSpeedBuff) > 0)
             {

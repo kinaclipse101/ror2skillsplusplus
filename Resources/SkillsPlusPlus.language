@@ -110,11 +110,11 @@
 		"SKILL_LUNAR_UTILITY_REPLACEMENT_NAME_UPGRADE_DESCRIPTION": "<style=cIsUtility>+10%</style> speed bonus and <style=cIsHealing>+15%</style> heal ticks \nAs Heretic, <style=cIsHealing>+3%</style> max health",
 		"SKILL_LUNAR_SPECIAL_REPLACEMENT_NAME_UPGRADE_DESCRIPTION": "<style=cIsDamage>+5%</style> damage and <style=cIsUtility>+20%</style> Ruin stack odds per attack \nAs Heretic, <style=cIsUtility>+0.25</style> base attack speed",
 
-		"RAILGUNNER_PRIMARY_NAME_UPGRADE_DESCRIPTION": "<style=cIsUtility>+10%</style> rate of fire and <style=cIsUtility>+20%</style> range",
-		"RAILGUNNER_SECONDARY_NAME_UPGRADE_DESCRIPTION": "<style=cIsUtility>+1</style> max empowered round and <style=cIsUtility>+1</style> stock every two levels",
+		"RAILGUNNER_PRIMARY_NAME_UPGRADE_DESCRIPTION": "<style=cIsUtility>+15%</style> rate of fire and <style=cIsUtility>+20%</style> range",
+		"RAILGUNNER_SECONDARY_NAME_UPGRADE_DESCRIPTION": "<style=cIsUtility>-20%</style> cooldown between shots and <style=cIsUtility>+1</style> shot every two levels",
 		"RAILGUNNER_SECONDARY_ALT_NAME_UPGRADE_DESCRIPTION": "<style=cIsUtility>+1</style> temporary armor per kill. Turns into <style=cIsUtility>+0.25s</style> movement speed boost after zoom out",
-		"RAILGUNNER_UTILITY_NAME_UPGRADE_DESCRIPTION": "<style=cIsUtility>+0.5s</style> slowfall on hit and <style=cIsUtility>+15%</style> throw range",
-		"RAILGUNNER_UTILITY_ALT_NAME_UPGRADE_DESCRIPTION": "<style=cIsUtility>+10%</style> global damage on affected enemies, <style=cIsUtility>+15%</style> range, and <style=cIsUtility>+15%</style> throw range",
+		"RAILGUNNER_UTILITY_NAME_UPGRADE_DESCRIPTION": "<style=cIsUtility>+0.5s</style> slowfall on hit and <style=cIsUtility>+10%</style> blast force",
+		"RAILGUNNER_UTILITY_ALT_NAME_UPGRADE_DESCRIPTION": "<style=cIsUtility>+10%</style> damage on affected enemies, <style=cIsUtility>+15%</style> range, and <style=cIsUtility>+15%</style> throw range",
 		"RAILGUNNER_SPECIAL_NAME_UPGRADE_DESCRIPTION": "<style=cIsUtility>+10%</style> proc chance and <style=cIsUtility>+20%</style> crit multiplier",
 		"RAILGUNNER_SPECIAL_ALT_NAME_UPGRADE_DESCRIPTION": "<style=cIsUtility>+2s</style> frostfire burn and <style=cIsUtility>-10%</style> cooldown duration",
 
@@ -140,12 +140,12 @@
 		"FALSESON_SPECIAL_ALT1_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
 
 		"CHEF_PRIMARY_NAME_UPGRADE_DESCRIPTION": "<style="cIsUtility">+10m</style> extra cleaver distance, <style="cIsDamage">+25%</style> extra damage and <style="cIsUtility">+20%</style> returning cleaver size\n\n<style="cShrine">[Boosted]</style>\n<style="cIsDamage">+4</style> extra cleavers",
-		"CHEF_SECONDARY_NAME_UPGRADE_DESCRIPTION": "<style="cIsHealing">+0.5%</style> health on hit and <style="cIsDamage">+25%</style> attack speed \n\n<style="cShrine">[Boosted]</style>\n<style="cIsDamage">+1</style> extra fireball",
+		"CHEF_SECONDARY_NAME_UPGRADE_DESCRIPTION": "<style="cIsHealing">+0.5%</style> health on hit and <style="cIsDamage">+15%</style> attack speed \n\n<style="cShrine">[Boosted]</style>\n<style="cIsDamage">+1</style> extra fireball",
 		"CHEF_SECONDARY_ALT_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
 		"CHEF_UTILITY_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
 		"CHEF_UTILITY_ALT_NAME_UPGRADE_DESCRIPTION": "<style="cIsUtility">+2</style> oil jumps \n\n<style="cShrine">[Boosted]</style>\n<style="cIsUtility">+2</style> boosted oil jumps",
 		"CHEF_SPECIAL_NAME_UPGRADE_DESCRIPTION": "<style="cIsDamage">+3</style> extra oil globs",
-		"CHEF_SPECIAL_ALT1_NAME_UPGRADE_DESCRIPTION": "Temporarily increase <style="cIsUtility">skill points</style> of the next used skill by <style="cIsUtility">+1</style>.",
+		"CHEF_SPECIAL_ALT1_NAME_UPGRADE_DESCRIPTION": "Temporarily increase <style="cIsUtility">skill points</style> of the next used skill by <style="cIsUtility">+1</style>",
 
 		"DRIFTER_PRIMARY_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
 		"DRIFTER_SECONDARY_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
@@ -153,7 +153,7 @@
 		"DRIFTER_SPECIAL_NAME_UPGRADE_DESCRIPTION": "<style="cIsUtility">+1 temporary item</style>",
 		"DRIFTER_SECONDARY_ALT_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
 		"DRIFTER_UTILITY_ALT_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
-		"DRIFTER_SPECIAL_ALT_NAME_UPGRADE_DESCRIPTION": "<style="cIsDamage">+25% projectile size and debuff duration</style>. Gain <style="cIsUtility">half a temporary item</style> when <style="cIsUtility">tinkering</style> with items every two levels.",
+		"DRIFTER_SPECIAL_ALT_NAME_UPGRADE_DESCRIPTION": "<style="cIsDamage">+25% projectile size and debuff duration</style>. When <style="cIsUtility">tinkering</style> with an item pickup, gain an <style="cIsUtility">extra half duration</style> to the resulting temporary item",
 
         "DRONETECH_PRIMARY_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
 		"DRONETECH_SECONDARY_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
@@ -162,5 +162,25 @@
 		"DRONETECH_SECONDARY_ALT_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
 		"DRONETECH_UTILITY_ALT_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
 		"DRONETECH_SPECIAL_ALT_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+
+		"ENFORCER2_PRIMARY_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		"ENFORCER2_PRIMARY_ALT_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		"ENFORCER2_SECONDARY_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		"ENFORCER2_SECONDARY_ALT_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		"ENFORCER2_UTILITY_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		"ENFORCER2_UTILITY_ALT_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		"ENFORCER2_SPECIAL_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		"ENFORCER2_SPECIAL_ALT_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		
+		"ACOLYTE_PRIMARY_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		"ACOLYTE_SECONDARY_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		"ACOLYTE_SECONDARY_ALT_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		"ACOLYTE_UTILITY_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		"ACOLYTE_UTILITY_ALT_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		"ACOLYTE_SPECIAL_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		"LILREAPER_PRIMARY_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		"LILREAPER_SECONDARY_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		"LILREAPER_UTILITY_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
+		"LILREAPER_SPECIAL_NAME_UPGRADE_DESCRIPTION": "Not Yet Implemented...",
 	}
 }

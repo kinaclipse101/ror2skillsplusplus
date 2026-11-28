@@ -202,12 +202,9 @@ namespace SkillsPlusPlus.Source.Modifiers
                         int level = GetSkillLevel(tinkerProjectile.ownerBody);
                         float newdecay = 1;
                         
-                        if (level >= 2)
-                        {
-                            newdecay += 0.5f/2f * (level - level % 2);
-                        }
+                        newdecay += 0.5f * (level);
                         
-                        Log.Debug("decayvalue time = " + newdecay);
+                        Log.Debug("decayvalue else time = " + newdecay);
                         return newdecay;
                     }
                 );
@@ -230,11 +227,8 @@ namespace SkillsPlusPlus.Source.Modifiers
                     {
                         int level = GetSkillLevel(tinkerProjectile.ownerBody);
                         float newdecay = 1;
-
-                        if (level >= 2)
-                        {
-                            newdecay += 0.5f/2f * (level - level % 2);
-                        }
+                        
+                        newdecay += 0.5f * (level);
                         
                         Log.Debug("decayvalue else time = " + newdecay);
                         return newdecay;

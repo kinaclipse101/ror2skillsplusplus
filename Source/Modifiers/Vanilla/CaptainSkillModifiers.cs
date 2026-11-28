@@ -69,13 +69,13 @@ namespace SkillsPlusPlus.Modifiers
     [SkillLevelModifier("CAPTAIN_UTILITY_ALT1_NAME", typeof(CallAirstrikeAlt), typeof(SetupAirstrikeAlt))]
     internal class CaptainDiabloStrikeSkillModifier : BaseSkillModifier
     {
-        private static int diabloStrikeProjectileCatalogIndex = -1337; // i <3 magic numbers i guess ,m,m
+        private static int diabloStrikeProjectileCatalogIndex = -1; // i <3 magic numbers i guess ,m,m
 
         public override void OnSkillLeveledUp(int level, CharacterBody characterBodyLevelup, SkillDef skillDef)
         {
             base.OnSkillLeveledUp(level, characterBodyLevelup, skillDef);
             
-            if (diabloStrikeProjectileCatalogIndex == -1337)
+            if (diabloStrikeProjectileCatalogIndex == -1)
             {
                 diabloStrikeProjectileCatalogIndex = ProjectileCatalog.FindProjectileIndex("CaptainAirstrikeAltProjectile");
             }
@@ -113,7 +113,7 @@ namespace SkillsPlusPlus.Modifiers
         public override void TakeDamage(int level, HealthComponent self, DamageInfo di, CharacterBody characterBody)
         {
             if (level <= 0) return;
-            if (diabloStrikeProjectileCatalogIndex == -1337)
+            if (diabloStrikeProjectileCatalogIndex == -1)
             {
                 diabloStrikeProjectileCatalogIndex = ProjectileCatalog.FindProjectileIndex("CaptainAirstrikeAltProjectile");
             }

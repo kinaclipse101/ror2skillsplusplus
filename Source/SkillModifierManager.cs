@@ -104,7 +104,7 @@ namespace SkillsPlusPlus
 
         internal static bool HasSkillModifier(SkillDef skillDef)
         {
-            return skillDef != null && HasSkillModifier(((ScriptableObject)skillDef)?.name);
+            return skillDef != null && HasSkillModifier(skillDef.skillNameToken);
         }
 
         internal static bool HasSkillModifier(string baseSkillName)

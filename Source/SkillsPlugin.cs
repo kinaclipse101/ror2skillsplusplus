@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityHotReloadNS;
 using HealthComponent = On.RoR2.HealthComponent;
+using LoadoutPanelController = RoR2.UI.LoadoutPanelController;
 using Path = System.IO.Path;
 
 //using UnityHotReloadNS;
@@ -67,7 +68,12 @@ public sealed class SkillsPlugin : BaseUnityPlugin
             return;
         }
         
-        if (!SkillUpgradeHelper.masterSkills.TryGetValue(master, out var skillUpgrades)) return;
+        if (!SkillUpgradeHelper.masterSkills.TryGetValue(master, out var skillUpgrades)) 
+        {
+            orig(self, damageinfo);
+            return;
+        }
+        
         foreach (var skillUpgrade in skillUpgrades)
         {
             BaseSkillModifier modifier = SkillModifierManager.GetSkillModifier(skillUpgrade?.skillDef);
@@ -143,11 +149,11 @@ public sealed class SkillsPlugin : BaseUnityPlugin
 
     private static LoadoutPanelController.Row Row_FromSkillSlot(On.RoR2.UI.LoadoutPanelController.Row.orig_FromSkillSlot orig, LoadoutPanelController owner, BodyIndex bodyIndex, int skillSlotIndex, GenericSkill skillSlot)
     {
-        var row = orig(owner, bodyIndex, skillSlotIndex, skillSlot);
+        object row = orig(owner, bodyIndex, skillSlotIndex, skillSlot);
 
-        if (row == null) return null;
+        if (row is not LoadoutPanelController.Row rowData) return (LoadoutPanelController.Row)row;
             
-        var buttons = row.rowData;
+        var buttons = rowData.rowData;
 
         for (int i = 0; i < buttons.Count; i++)
         {
@@ -161,7 +167,7 @@ public sealed class SkillsPlugin : BaseUnityPlugin
             }
         }
 
-        return row;
+        return rowData;
     }
 
     private static void HUD_onHudTargetChangedGlobal(HUD hud)
